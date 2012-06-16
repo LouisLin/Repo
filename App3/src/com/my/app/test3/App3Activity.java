@@ -1,6 +1,7 @@
 package com.my.app.test3;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,8 +29,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.my.app.test3.lib.MyConvert;
+
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.XmlResourceParser;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -68,35 +77,36 @@ public class App3Activity extends Activity {
         view[5] = (TextView)findViewById(R.id.textView6);
         view[6] = (TextView)findViewById(R.id.textView7);
 		final String data[] = new String[Tag.TAG_COUNT];
+		InputStream in = getResources().openRawResource(R.raw.query);
+		final String query = MyConvert.inputStream2String(in);
 
         mWeb = new Thread(new Runnable() {
 			public void run() {
 				try {
 					URI uri = new URI("http://192.168.1.2/Android/registration.xml");
-//					String queryXml = String.format("<CompanyName>" +
-//						"<PhoneId>%s</PhoneId>" +
-//						"<SIM_No>%s</SIM_No>" +
-//						"<PhoneNum>%s</PhoneNum>" +
-//						"</CompanyName>",
-//						"12345", "89886970908412134609", "0939064759");
-//					HttpPost req = new HttpPost(uri);
-//					StringEntity entify = new StringEntity(queryXml, HTTP.UTF_8);
-//					entify.setContentType("text/xml");
-//			        req.setEntity(entify);
-					HttpGet req = new HttpGet(uri);
+					String sn = Build.SERIAL;
+					String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
+					String isdn = "0939064759";
+					String queryXml = String.format(query, sn, imsi, isdn);
+
+					HttpPost req = new HttpPost(uri);
+					StringEntity entify = new StringEntity(queryXml, HTTP.UTF_8);
+					entify.setContentType("text/xml");
+			        req.setEntity(entify);
 
 					HttpResponse resp = new DefaultHttpClient().execute(req);
 					int status = resp.getStatusLine().getStatusCode();
-					
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();   
-					Document doc = builder.parse(resp.getEntity().getContent());
-					Element root = doc.getDocumentElement();
-					for (int i = 0; i < Tag.TAG_COUNT; ++i) {
-						NodeList nodes = root.getElementsByTagName(Tag.name[i]);
-						data[i] = nodes.item(0).getFirstChild().getNodeValue();
+					if (status == 200) {
+						DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+						DocumentBuilder builder = factory.newDocumentBuilder();   
+						Document doc = builder.parse(resp.getEntity().getContent());
+						Element root = doc.getDocumentElement();
+						for (int i = 0; i < Tag.TAG_COUNT; ++i) {
+							NodeList nodes = root.getElementsByTagName(Tag.name[i]);
+							data[i] = nodes.item(0).getFirstChild().getNodeValue();
+						}
 					}
-//					resp.getEntity().consumeContent();
+					resp.getEntity().consumeContent();
 				} catch (ClientProtocolException e) {
 					// TODO Auto-generated catch block
 					Log.e("App3", "ClientProtocolException");

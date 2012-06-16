@@ -1,0 +1,5 @@
+<Query>
+    <PhoneSN>%s</PhoneSN>
+    <IMSI>%s</IMSI>
+    <ISDN>%s</ISDN>
+</Query>
