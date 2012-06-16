@@ -83,10 +83,13 @@ public class App3Activity extends Activity {
         mWeb = new Thread(new Runnable() {
 			public void run() {
 				try {
-					URI uri = new URI("http://192.168.1.2/Android/registration.xml");
+					URI uri = new URI("http://192.168.1.2/Android/query_status.xml");
 					String sn = Build.SERIAL;
 					String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
-					String isdn = "0939064759";
+					String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+					if (isdn == "") {
+						isdn = "0930123456";
+					}
 					String queryXml = String.format(query, sn, imsi, isdn);
 
 					HttpPost req = new HttpPost(uri);

@@ -1,0 +1,10 @@
+<Register>
+	<PhoneSN>%s</PhoneSN>
+	<IMSI>%s</IMSI>
+    <ISDN>%s</ISDN>
+    <Name>%s</Name>
+	<Hospitals>
+	    <Hospital index="0">%s</Hospital>
+	    <Hospital index="1">%s</Hospital>
+	</Hospitals>
+</Register>
