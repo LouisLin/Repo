@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, App4Activity!</string>
+    <string name="app_name">App4</string>
+    <string name="chkbox1_title">Checkbox Title</string>
+    <string name="chkbox1_summary">Checkbox1 Summary</string>
+
+</resources>
