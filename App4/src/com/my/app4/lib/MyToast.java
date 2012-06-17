@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app4;
+package com.my.app4.lib;
 
 import android.content.Context;
 import android.widget.Toast;
