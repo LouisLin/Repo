@@ -12,8 +12,8 @@ import android.content.Intent;
  */
 public class MyIntent {
 	
-	public static void startService(Context context, Class<?> cls) {
-		Intent svcIntent = new Intent(context, cls);
+	public static void startService(Context context) {
+		Intent svcIntent = new Intent(context, context.getClass());
 		context.startService(svcIntent);
 	}
 
