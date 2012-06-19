@@ -21,22 +21,19 @@ import android.util.Log;
 public class MyNotification {
 
 	public static Notification.Builder getDefaultNotificationBuilder(Context context) {
+		String appName = context.getString(R.string.app_name);
 		return new Notification.Builder(context)
-		.setDefaults(Notification.DEFAULT_ALL)
-		.setTicker(context.getPackageName())
+		.setDefaults(Notification.DEFAULT_VIBRATE)
 		.setSmallIcon(R.drawable.ic_launcher)	// important
-		.setContentTitle("MyTitle")
-		.setContentText("MyText")
-		.setContentInfo("MyInfo")
+		.setTicker(appName)
+		.setContentTitle(appName)
+		.setContentText("Description")
+//		.setContentInfo("Info")
 //		.setNumber(0)
 //		.setContentIntent(intent)
-//		.setAutoCancel(true)
+		.setOnlyAlertOnce(true)
+		.setAutoCancel(true)
 		;
-	}
-
-	public static void notify(Activity activity, int id, Notification notification) {
-		NotificationManager manager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(id, notification);
 	}
 
 /*	public static void notify(Activity activity, int id) {
@@ -60,4 +57,13 @@ public class MyNotification {
 	}
 */
 	
+	public static void notify(Context context, int id, Notification notification) {
+		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(id, notification);
+	}
+
+	public static void cancel(Context context, int id) {
+		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.cancel(id);		
+	}
 }
