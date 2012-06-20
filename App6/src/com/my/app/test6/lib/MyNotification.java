@@ -1,9 +1,10 @@
 /**
  * 
  */
-package com.my.app.test1.lib;
+package com.my.app.test6.lib;
 
-import com.my.app.test1.R;
+import com.my.app.test6.MyApp;
+import com.my.app.test6.R;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -56,7 +57,8 @@ public class MyNotification {
 	}
 */
 	
-	public static void notify(Context context, int id, Notification notification) {
+	public static void notify(Context _context, int id, Notification notification) {
+		Context context = MyApp.getContext();
 		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 		manager.notify(id, notification);
 	}
