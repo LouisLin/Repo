@@ -82,7 +82,7 @@ public class MyBackgroundService extends Service {
 			TextView now = (TextView) view.findViewById(R.id.textView2);
 			now.setText("16");
 			AlertDialog alert = MyAlertDialog.getDefaultAlertDialogBuilder()
-				.setMessage("看診進度通知")
+				.setMessage("Progress")
 				.setView(view)
 				.create();
 			MyAlertDialog.alert(alert);
