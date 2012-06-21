@@ -6,20 +6,21 @@ package com.my.app.test1;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.my.app.test1.lib.MyAlertDialog;
 import com.my.app.test1.lib.MyApp;
-import com.my.app.test1.lib.MyIntent;
+import com.my.app.test1.lib.MyLayoutInflater;
 import com.my.app.test1.lib.MyNotification;
+import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyToast;
-
+import android.app.AlertDialog;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
 /**
  * @author Louis
@@ -50,11 +51,8 @@ public class MyBackgroundService extends Service {
 		protected Long doInBackground(URI... params) {
 			// TODO Auto-generated method stub
 			if (!isCancelled()) {
-				Notification notification = MyNotification.getDefaultNotificationBuilder()
-					.getNotification();
-				MyNotification.notify(MyApp.ID, notification);
-				SystemClock.sleep(3000);
-				publishProgress(10);
+				/* TODO: check server */
+				publishProgress(100);
 			}
 
 			return (long) 999;
@@ -69,6 +67,7 @@ public class MyBackgroundService extends Service {
 		protected void onProgressUpdate(Integer... values) {
 			// TODO Auto-generated method stub
 			MyToast.show("AsyncTask:onProgressUpdate()");
+
 			super.onProgressUpdate(values);
 		}
 
@@ -76,6 +75,26 @@ public class MyBackgroundService extends Service {
 		protected void onPostExecute(Long result) {
 			// TODO Auto-generated method stub
 			MyToast.show("AsyncTask:onPostExecute()");
+
+			View view = MyLayoutInflater.inflate(R.layout.alert);
+			TextView yourNum = (TextView) view.findViewById(R.id.textView1);
+			yourNum.setText("39");
+			TextView now = (TextView) view.findViewById(R.id.textView2);
+			now.setText("16");
+			AlertDialog alert = MyAlertDialog.getDefaultAlertDialogBuilder()
+				.setMessage("看診進度通知")
+				.setView(view)
+				.create();
+			MyAlertDialog.alert(alert);
+
+			Notification notification = MyNotification.getDefaultNotificationBuilder()
+				.setNumber(39)
+				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
+				.getNotification();
+			MyNotification.notify(MyApp.ID, notification);
+
+			SystemClock.sleep(3000);
+
 			MyBackgroundService.this.stopSelf();
 			super.onPostExecute(result);
 		}

@@ -8,6 +8,7 @@ import com.my.app.test1.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.WindowManager;
 
 /**
  * @author Louis
@@ -51,6 +52,7 @@ public class MyAlertDialog {
 	}
 
 	public static void alert(AlertDialog alert) {
+		alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
 		alert.show();
 	}
 }

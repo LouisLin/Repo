@@ -3,7 +3,6 @@
  */
 package com.my.app.test1.lib;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -13,7 +12,7 @@ import android.view.View;
  */
 public class MyLayoutInflater {
 
-	public static View inflate(Context context, int resource) {
-        return LayoutInflater.from(context).inflate(resource, null);
+	public static View inflate(int resource) {
+        return LayoutInflater.from(MyApp.getContext()).inflate(resource, null);
 	}
 }
