@@ -3,7 +3,6 @@
  */
 package com.my.app.test1.lib;
 
-import android.content.Context;
 import android.widget.Toast;
 
 /**
@@ -12,11 +11,11 @@ import android.widget.Toast;
  */
 public class MyToast {
 
-	public static void show(Context context, CharSequence text) {
-		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	public static void show(CharSequence text) {
+		Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_SHORT).show();
 	}
 
-	public static void showLong(Context context, CharSequence text) {
-		Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+	public static void showLong(CharSequence text) {
+		Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_LONG).show();
 	}
 }

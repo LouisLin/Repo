@@ -15,12 +15,11 @@ import android.content.DialogInterface;
  */
 public class MyAlertDialog {
 
-	public static AlertDialog.Builder getDefaultAlertDialogBuilder(Context context) {
-		String appName = context.getString(R.string.app_name);
-		return new AlertDialog.Builder(context)
+	public static AlertDialog.Builder getDefaultAlertDialogBuilder() {
+		return new AlertDialog.Builder(MyApp.getContext())
 //			.setIcon(R.drawable.ic_launcher)
 //			.setIconAttribute(android.R.attr.alertDialogIcon)
-			.setTitle(appName)
+			.setTitle(MyApp.getName())
 			.setMessage("Message...")
 //			.setView(null)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -50,7 +49,8 @@ public class MyAlertDialog {
 			.setCancelable(true)
 			;
 	}
-	public static void alert(Context context, AlertDialog alert) {
+
+	public static void alert(AlertDialog alert) {
 		alert.show();
 	}
 }

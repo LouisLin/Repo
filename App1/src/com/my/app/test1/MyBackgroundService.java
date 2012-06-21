@@ -6,6 +6,7 @@ package com.my.app.test1;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.my.app.test1.lib.MyApp;
 import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyToast;
@@ -24,7 +25,7 @@ import android.widget.Toast;
  * @author Louis
  *
  */
-public class MyBootService extends Service {
+public class MyBackgroundService extends Service {
 
 	private class MyTask extends AsyncTask<URI, Integer, Long> {
 
@@ -35,7 +36,7 @@ public class MyBootService extends Service {
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
-			MyToast.show(getBaseContext(), "AsyncTask:onPreExecute()");
+			MyToast.show("AsyncTask:onPreExecute()");
 			super.onPreExecute();
 		}
 
@@ -49,10 +50,9 @@ public class MyBootService extends Service {
 		protected Long doInBackground(URI... params) {
 			// TODO Auto-generated method stub
 			if (!isCancelled()) {
-				Notification notification = MyNotification.getDefaultNotificationBuilder(MyBootService.this)
-						.setOnlyAlertOnce(false)
-						.getNotification();
-				MyNotification.notify(MyBootService.this, R.string.app_name, notification);
+				Notification notification = MyNotification.getDefaultNotificationBuilder()
+					.getNotification();
+				MyNotification.notify(MyApp.ID, notification);
 				SystemClock.sleep(3000);
 				publishProgress(10);
 			}
@@ -68,22 +68,22 @@ public class MyBootService extends Service {
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			// TODO Auto-generated method stub
-			MyToast.show(getBaseContext(), "AsyncTask:onProgressUpdate()");
+			MyToast.show("AsyncTask:onProgressUpdate()");
 			super.onProgressUpdate(values);
 		}
 
 		@Override
 		protected void onPostExecute(Long result) {
 			// TODO Auto-generated method stub
-			MyToast.show(getBaseContext(), "AsyncTask:onPostExecute()");
-			MyBootService.this.stopSelf();
+			MyToast.show("AsyncTask:onPostExecute()");
+			MyBackgroundService.this.stopSelf();
 			super.onPostExecute(result);
 		}
 
 		@Override
 		protected void onCancelled(Long result) {
 			// TODO Auto-generated method stub
-			MyToast.show(getBaseContext(), "AsyncTask:onCancelled()");
+			MyToast.show("AsyncTask:onCancelled()");
 			super.onCancelled(result);
 		}
 
@@ -95,7 +95,7 @@ public class MyBootService extends Service {
 		super.onCreate();
 
 		/* For One-Shot Service */
-		MyToast.show(this, MyBootService.class.getSimpleName() + ":onCreate()");
+		MyToast.show(MyBackgroundService.class.getSimpleName() + ":onCreate()");
 		try {
 			new MyTask().execute(new URI("https://a.com"));
 		} catch (URISyntaxException e) {
@@ -121,7 +121,7 @@ public class MyBootService extends Service {
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		MyToast.show(this, MyBootService.class.getSimpleName() + ":onDestroy()");
+		MyToast.show(MyBackgroundService.class.getSimpleName() + ":onDestroy()");
 		super.onDestroy();
 	}
 
