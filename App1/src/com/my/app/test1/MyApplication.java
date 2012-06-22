@@ -8,9 +8,7 @@ import com.my.app.test1.lib.MyToast;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.ComponentCallbacks;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -34,14 +32,14 @@ public class MyApplication extends Application {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Auto-generated method stub
-		MyToast.show("onConfigurationChanged()");
+//		MyToast.show("onConfigurationChanged()");
 		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
-		MyToast.show("onCreate()");
+//		MyToast.show("onCreate()");
 		registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
 		registerComponentCallbacks(mComponentCallbacks );
 		super.onCreate();
@@ -50,21 +48,21 @@ public class MyApplication extends Application {
 	@Override
 	public void onLowMemory() {
 		// TODO Auto-generated method stub
-		MyToast.show("onLowMemory()");
+//		MyToast.show("onLowMemory()");
 		super.onLowMemory();
 	}
 
 	@Override
 	public void onTerminate() {
 		// TODO Auto-generated method stub
-		MyToast.show("onTerminate()");
+//		MyToast.show("onTerminate()");
 		super.onTerminate();
 	}
 
 	@Override
 	public void onTrimMemory(int level) {
 		// TODO Auto-generated method stub
-		MyToast.show("onTrimMemory()");
+//		MyToast.show("onTrimMemory()");
 		super.onTrimMemory(level);
 	}
 
@@ -74,14 +72,14 @@ public class MyApplication extends Application {
 		public void onActivityCreated(Activity activity,
 				Bundle savedInstanceState) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityCreated():" + activity.getClass().getSimpleName());
+//			MyToast.show("onActivityCreated():" + activity.getClass().getSimpleName());
 			++MyApplication.this.mActivities;
 		}
 
 		@Override
 		public void onActivityDestroyed(Activity activity) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityDestroyed():" + activity.getClass().getSimpleName());
+//			MyToast.show("onActivityDestroyed():" + activity.getClass().getSimpleName());
 			if (--MyApplication.this.mActivities == 0) {
 				MyApplication.this.unregisterComponentCallbacks(mComponentCallbacks);
 				MyApplication.this.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
@@ -91,32 +89,32 @@ public class MyApplication extends Application {
 		@Override
 		public void onActivityPaused(Activity activity) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityPaused():" + activity.getClass().getSimpleName());			
+//			MyToast.show("onActivityPaused():" + activity.getClass().getSimpleName());			
 		}
 
 		@Override
 		public void onActivityResumed(Activity activity) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityResumed():" + activity.getClass().getSimpleName());			
+//			MyToast.show("onActivityResumed():" + activity.getClass().getSimpleName());			
 		}
 
 		@Override
 		public void onActivitySaveInstanceState(Activity activity,
 				Bundle outState) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivitySaveInstanceState():" + activity.getClass().getSimpleName());			
+//			MyToast.show("onActivitySaveInstanceState():" + activity.getClass().getSimpleName());			
 		}
 
 		@Override
 		public void onActivityStarted(Activity activity) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityStarted():" + activity.getClass().getSimpleName());			
+//			MyToast.show("onActivityStarted():" + activity.getClass().getSimpleName());			
 		}
 
 		@Override
 		public void onActivityStopped(Activity activity) {
 			// TODO Auto-generated method stub
-			MyToast.show("onActivityStopped():" + activity.getClass().getSimpleName());			
+//			MyToast.show("onActivityStopped():" + activity.getClass().getSimpleName());			
 		}
 	}
 
@@ -125,13 +123,13 @@ public class MyApplication extends Application {
 		@Override
 		public void onConfigurationChanged(Configuration newConfig) {
 			// TODO Auto-generated method stub
-			MyToast.show("ComponentCallbacks.onConfigurationChanged()");			
+//			MyToast.show("ComponentCallbacks.onConfigurationChanged()");			
 		}
 
 		@Override
 		public void onLowMemory() {
 			// TODO Auto-generated method stub
-			MyToast.show("ComponentCallbacks.onLowMemory()");			
+//			MyToast.show("ComponentCallbacks.onLowMemory()");			
 		}
 
 	}

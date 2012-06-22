@@ -3,10 +3,7 @@
  */
 package com.my.app.test1.lib;
 
-import com.my.app.test1.R;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.view.WindowManager;
 
@@ -48,6 +45,14 @@ public class MyAlertDialog {
 				}
 			})
 			.setCancelable(true)
+			.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					// TODO Auto-generated method stub
+					MyToast.show("Alert onCancel()");
+				}
+			})
 			;
 	}
 

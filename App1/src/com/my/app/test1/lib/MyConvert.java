@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test3.lib;
+package com.my.app.test1.lib;
 
 import java.io.BufferedReader;
 import java.io.IOException;

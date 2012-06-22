@@ -34,7 +34,7 @@ public class MyNotifiedActivity extends Activity {
 		Notification notification = MyNotification.getDefaultNotificationBuilder()
 			.setDefaults(0)
 			.setTicker(null)
-			.setNumber(39)
+			.setContentInfo(MyApp.getQueryDiagNo(0) + "-" + MyApp.getQueryRegNo(0))
 			.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 			.getNotification();
 		MyNotification.notify(MyApp.ID, notification);

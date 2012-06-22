@@ -3,11 +3,25 @@
  */
 package com.my.app.test1;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.xml.sax.SAXException;
+
 import com.my.app.test1.lib.MyAlertDialog;
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyConvert;
 import com.my.app.test1.lib.MyLayoutInflater;
 import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
@@ -15,10 +29,14 @@ import com.my.app.test1.lib.MyToast;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,7 +46,7 @@ import android.widget.TextView;
  */
 public class MyBackgroundService extends Service {
 
-	private class MyTask extends AsyncTask<URI, Integer, Long> {
+	private class MyTask extends AsyncTask<String, Integer, Integer> {
 
 		/*
 		 * This step is normally used to setup the task,
@@ -48,14 +66,62 @@ public class MyBackgroundService extends Service {
 		 * to publish one or more units of progress.
 		 */
 		@Override
-		protected Long doInBackground(URI... params) {
+		protected Integer doInBackground(String... params) {
 			// TODO Auto-generated method stub
+			int result = -1;
+
 			if (!isCancelled()) {
 				/* TODO: check server */
+				URI uri = null;
+				try {
+					uri = new URI(params[0]);
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return result;
+				}
+
+				HttpPost req = new HttpPost(uri);
+				try {
+					StringEntity entify = new StringEntity(params[1], HTTP.UTF_8);
+					entify.setContentType("text/xml");
+			        req.setEntity(entify);
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return result;
+				}
+
+				try {
+					HttpResponse resp = new DefaultHttpClient().execute(req);
+					if (isCancelled()) return result;
+					int status = resp.getStatusLine().getStatusCode();
+					if (status == 200) {
+						MyApp.updateQueryStatus(resp.getEntity().getContent());
+						result = MyApp.getQueryError();
+					}
+					resp.getEntity().consumeContent();
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				publishProgress(100);
 			}
 
-			return (long) 999;
+			return result;
 		}
 
 		/*
@@ -66,27 +132,48 @@ public class MyBackgroundService extends Service {
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			// TODO Auto-generated method stub
-			MyToast.show("AsyncTask:onProgressUpdate()");
+//			MyToast.show("AsyncTask:onProgressUpdate()");
 
 			super.onProgressUpdate(values);
 		}
 
 		@Override
-		protected void onPostExecute(Long result) {
+		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
-			MyToast.show("AsyncTask:onPostExecute()");
-
-			View view = MyLayoutInflater.inflate(R.layout.alert);
-			TextView yourNum = (TextView) view.findViewById(R.id.textView1);
-			yourNum.setText("39");
-			TextView now = (TextView) view.findViewById(R.id.textView2);
-			now.setText("16");
-			AlertDialog alert = MyAlertDialog.getDefaultAlertDialogBuilder()
-				.setMessage("Progress")
-				.setView(view)
-				.create();
-			MyAlertDialog.alert(alert);
-
+			if (result == 0) {
+				View view = MyLayoutInflater.inflate(R.layout.alert);
+				TextView yourNum = (TextView)view.findViewById(R.id.textView1);
+				yourNum.setText(String.valueOf(MyApp.getQueryRegNo(0)));
+				TextView now = (TextView) view.findViewById(R.id.textView2);
+				now.setText(String.valueOf(MyApp.getQueryDiagNo(0)));
+			
+				AlertDialog alert = MyAlertDialog.getDefaultAlertDialogBuilder()
+					.setMessage("Progress")
+					.setView(view)
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							
+						}
+					})
+					.setOnCancelListener(new DialogInterface.OnCancelListener() {
+						
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							// TODO Auto-generated method stub
+							Notification notification = MyNotification.getDefaultNotificationBuilder()
+								.setContentInfo(MyApp.getQueryDiagNo(0) + "-" + MyApp.getQueryRegNo(0))
+								.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
+								.getNotification();
+							MyNotification.notify(MyApp.ID, notification);							
+						}
+					})
+					.create();
+				MyAlertDialog.alert(alert);
+			}
+/*
 			Notification notification = MyNotification.getDefaultNotificationBuilder()
 				.setNumber(39)
 				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
@@ -94,15 +181,17 @@ public class MyBackgroundService extends Service {
 			MyNotification.notify(MyApp.ID, notification);
 
 			SystemClock.sleep(3000);
-
+*/
 			MyBackgroundService.this.stopSelf();
 			super.onPostExecute(result);
 		}
 
 		@Override
-		protected void onCancelled(Long result) {
+		protected void onCancelled(Integer result) {
 			// TODO Auto-generated method stub
 			MyToast.show("AsyncTask:onCancelled()");
+
+			MyBackgroundService.this.stopSelf();
 			super.onCancelled(result);
 		}
 
@@ -114,12 +203,21 @@ public class MyBackgroundService extends Service {
 		super.onCreate();
 
 		/* For One-Shot Service */
-		MyToast.show(MyBackgroundService.class.getSimpleName() + ":onCreate()");
-		try {
-			new MyTask().execute(new URI("https://a.com"));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String serviceURI = "http://192.168.1.2/Android/query_status.xml";
+		InputStream in = getResources().openRawResource(R.raw.query);
+		String sn = Build.SERIAL;
+		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
+		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+		if (isdn == "") {
+			isdn = "0930123456";
+		}
+		String queryXml = String.format(MyConvert.inputStream2String(in), sn, imsi, isdn);
+
+		AsyncTask<String, Integer, Integer> task =
+			new MyTask().execute(serviceURI, queryXml);
+		SystemClock.sleep(5000);
+		if (task.getStatus() != AsyncTask.Status.FINISHED) {
+			task.cancel(true);
 		}
 	}
 
