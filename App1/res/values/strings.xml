@@ -3,13 +3,12 @@
 
     <string name="hello">Hello World!</string>
     <string name="app_name">App1</string>
-    <string name="XXX_receiver_name">My Boot Receiver</string>
-    <string-array name="query_status_tag">
+    <string name="query_uri">http://192.168.1.2/Android/query_status.xml</string><string-array name="query_status_tag">
         <item >Error</item>
         <item >RecNum</item>
         <item >RegRec</item>
     </string-array><string-array name="query_status_rec_tag">
-        <item >Haspital</item>
+        <item >Hospital</item>
         <item >Department</item>
         <item >RegDate</item>
         <item >DiagDate</item>
@@ -17,6 +16,7 @@
         <item >DiagNo</item>
         <item >EstTime</item>
     </string-array>
+    
     
 
 </resources>

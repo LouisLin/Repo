@@ -16,9 +16,7 @@ import android.widget.Button;
  * @author Louis
  *
  */
-public class MyLauncherActivity extends Activity implements OnClickListener {
-
-	private PendingIntent intent;
+public class MyLauncherActivity extends Activity {
 
 	/** Called when the activity is first created. */
 	@Override
@@ -28,23 +26,32 @@ public class MyLauncherActivity extends Activity implements OnClickListener {
 	    // TODO Auto-generated method stub
 	    setContentView(R.layout.main);
 	    
-	    Button startAlarm = (Button)findViewById(R.id.button1);
-	    startAlarm.setOnClickListener(this);
+		final PendingIntent intent = PendingIntent.getBroadcast(
+			this, 0, new Intent(this, MyAlarmReceiver.class), 0);
+
+		Button startAlarm = (Button)findViewById(R.id.button1);
+	    startAlarm.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MyAlarm.setInexactRepeating(30000, intent);
+				
+			}
+	    	
+	    });
 	    Button stopAlarm = (Button)findViewById(R.id.button2);
-	    stopAlarm.setOnClickListener(this);
+	    stopAlarm.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MyAlarm.cancel(intent);
+				
+			}
+	    	
+	    });
 	    
-		intent = PendingIntent.getBroadcast(this, 0,
-			new Intent(this, MyAlarmReceiver.class), 0);
 	}
 
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		if (v.getId() == R.id.button1) {
-			MyAlarm.setInexactRepeating(30000, intent);
-		} else {
-			MyAlarm.cancel(intent);
-		}
-	}
-	
 }

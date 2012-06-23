@@ -17,19 +17,40 @@ public class MyNotification {
 
 	public static Notification.Builder getDefaultNotificationBuilder() {
 		return new Notification.Builder(MyApp.getContext())
-		.setDefaults(Notification.DEFAULT_ALL)
-		.setSmallIcon(R.drawable.ic_launcher)	// important
-		.setTicker(MyApp.getName())
-		.setContentTitle(MyApp.getName())
-		.setContentText("Description")
-//		.setContentInfo("Info")
-//		.setNumber(0)
-//		.setContentIntent(intent)
-//		.setOnlyAlertOnce(false)
-		.setAutoCancel(true)
-		;
+			.setDefaults(Notification.DEFAULT_ALL)
+			.setSmallIcon(R.drawable.ic_launcher)	// important
+			.setTicker(MyApp.getName())
+			.setContentTitle(MyApp.getName())
+			.setContentText("Description")
+//			.setContentInfo("Info")
+//			.setNumber(0)
+//			.setContentIntent(intent)
+			.setOnlyAlertOnce(true)
+			.setAutoCancel(true)
+			;
 	}
 	
+	public static Notification getSoundVibrateNotification() {
+		return new Notification.Builder(MyApp.getContext())
+			.setDefaults(Notification.DEFAULT_ALL)
+//			.setOnlyAlertOnce(true)
+			.getNotification();
+	}
+
+	public static Notification getSoundNotification() {
+		return new Notification.Builder(MyApp.getContext())
+			.setDefaults(Notification.DEFAULT_SOUND)
+//			.setOnlyAlertOnce(true)
+			.getNotification();
+	}
+
+	public static Notification getVibrateNotification() {
+		return new Notification.Builder(MyApp.getContext())
+			.setDefaults(Notification.DEFAULT_VIBRATE)
+//			.setOnlyAlertOnce(true)
+			.getNotification();
+	}
+
 	public static void notify(int id, Notification notification) {
 		NotificationManager manager = (NotificationManager)MyApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 		manager.notify(id, notification);

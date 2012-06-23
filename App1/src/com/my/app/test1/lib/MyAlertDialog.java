@@ -60,4 +60,9 @@ public class MyAlertDialog {
 		alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
 		alert.show();
 	}
+	
+	public static void dismiss(AlertDialog alert) {
+		alert.dismiss();
+	}
+
 }

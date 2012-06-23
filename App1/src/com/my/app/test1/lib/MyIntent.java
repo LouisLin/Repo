@@ -24,4 +24,13 @@ public class MyIntent {
 		MyApp.getContext().startActivity(intent);
 	}
 
+	public static void startOnlyOneActivity(Class<?> cls) {
+		Intent intent = new Intent(MyApp.getContext(), cls);
+//		intent.setAction(Intent.ACTION_MAIN);
+//		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK/* | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY*/);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		MyApp.getContext().startActivity(intent);
+	}
+
 }
