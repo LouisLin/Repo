@@ -169,6 +169,8 @@ public class MyBackgroundService extends Service {
 		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
 			if (result == 0) {
+				MyIntent.startSingleActivity(MyNotifiedActivity.class);
+				/*
 				final MyApplication app = ((MyApplication)getApplicationContext());
 
 				MyNotification.notify(MyApp.ID, MyNotification.getSoundVibrateNotification());
@@ -221,6 +223,7 @@ public class MyBackgroundService extends Service {
 					.create();
 				MyAlertDialog.alert(alert);
 				app.setGlobalAlert(alert);
+				*/
 			} else {
 				MyToast.show("result=" + result);
 			}
@@ -283,6 +286,7 @@ public class MyBackgroundService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
+		MyToast.show("onBind()");
 		return null;
 	}
 

@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 
 import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyToast;
@@ -35,7 +36,19 @@ public class MyNotifiedActivity extends Activity {
 	
 	    // TODO Auto-generated method stub
 	    setContentView(R.layout.notified);
+	    getActionBar().setTitle("Notification");
 	    
+	    Button query = (Button)findViewById(R.id.button10);
+	    query.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MyIntent.startService(MyBackgroundService.class);
+			}
+	    	
+	    });
+
 		Button stopAlarm = (Button)findViewById(R.id.button11);
 	    stopAlarm.setOnClickListener(new OnClickListener() {
 

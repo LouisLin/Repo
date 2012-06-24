@@ -55,6 +55,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/red"
         android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/button10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Query" />
     
     <Button
         android:id="@+id/button11"
