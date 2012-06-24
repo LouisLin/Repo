@@ -20,12 +20,17 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ComponentCallbacks;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -48,10 +53,13 @@ public class MyApplication extends Application {
 		EST_TIME
 	};
 
+	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	private String[] mTags = null;
 	private String[] mRecTags = null;
 	private Bundle mQueryStatus = new Bundle();
-	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	private AlertDialog mGlobalAlert = null;
+	
+	private int mTEST_UpdateQueryCount = 0;
 
 	public MyApplication() {
 		super();
@@ -72,6 +80,11 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		MyToast.show("onCreate()");
+
+		String isdn = MyPreferences.getString("isdn", null);
+		if (isdn == null) {
+			MyPreferences.setString("isdn", "0987654321");
+		}
 
 		mTags = getResources().getStringArray(R.array.query_status_tag);
 		mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
@@ -106,6 +119,10 @@ public class MyApplication extends Application {
 		MyToast.show("onTrimMemory()");
 
 		super.onTrimMemory(level);
+	}
+
+	public SimpleDateFormat getDateFormat() {
+		return mDateFormat;
 	}
 
 	public void updateQueryStatus(InputStream queryStatus) throws ParserConfigurationException, SAXException, IOException {
@@ -181,7 +198,7 @@ public class MyApplication extends Application {
 						break;
 					case DIAG_NO:
 						try {
-							recBundle.putInt(mRecTags[eRecTags.ordinal()], Integer.parseInt(value));
+							recBundle.putInt(mRecTags[eRecTags.ordinal()], Integer.parseInt(value) + mTEST_UpdateQueryCount);
 						} catch (NumberFormatException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();							
@@ -199,6 +216,7 @@ public class MyApplication extends Application {
 				}			
 			}
 		}
+		++mTEST_UpdateQueryCount;
 	}
 
 	public int getQueryError() {
@@ -272,6 +290,15 @@ public class MyApplication extends Application {
 			throw new IndexOutOfBoundsException();
 		}
 		return bundle.getInt(mRecTags[QueryRecTags.DIAG_NO.ordinal()]);
+	}
+
+	public AlertDialog getGlobalAlert() {
+		return mGlobalAlert;
+	}
+
+
+	public void setGlobalAlert(AlertDialog alert) {
+		mGlobalAlert = alert;
 	}
 
 }

@@ -18,18 +18,14 @@ public class MyIntent {
 
 	public static void startActivity(Class<?> cls) {
 		Intent intent = new Intent(MyApp.getContext(), cls);
-//		intent.setAction(Intent.ACTION_MAIN);
-//		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK/* | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY*/);
 		MyApp.getContext().startActivity(intent);
 	}
 
-	public static void startOnlyOneActivity(Class<?> cls) {
+	public static void startSingleActivity(Class<?> cls) {
 		Intent intent = new Intent(MyApp.getContext(), cls);
-//		intent.setAction(Intent.ACTION_MAIN);
-//		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK/* | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY*/);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		MyApp.getContext().startActivity(intent);
 	}
 

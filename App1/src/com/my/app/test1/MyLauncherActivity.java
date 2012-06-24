@@ -4,6 +4,9 @@
 package com.my.app.test1;
 
 import com.my.app.test1.lib.MyAlarm;
+import com.my.app.test1.lib.MyIntent;
+import com.my.app.test1.lib.MyPendingIntent;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -26,16 +29,15 @@ public class MyLauncherActivity extends Activity {
 	    // TODO Auto-generated method stub
 	    setContentView(R.layout.main);
 	    
-		final PendingIntent intent = PendingIntent.getBroadcast(
-			this, 0, new Intent(this, MyAlarmReceiver.class), 0);
-
+	    // Fix part:
 		Button startAlarm = (Button)findViewById(R.id.button1);
 	    startAlarm.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.setInexactRepeating(30000, intent);
+				MyAlarm.setInexactRepeating(10000,
+					MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
 				
 			}
 	    	
@@ -46,12 +48,21 @@ public class MyLauncherActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.cancel(intent);
+				MyAlarm.cancel(MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
 				
 			}
 	    	
 	    });
-	    
+	    Button settings = (Button)findViewById(R.id.button3);
+	    settings.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MyIntent.startActivity(MyPreferenceActivity.class);
+			}
+	    	
+	    });
 	}
 
 }

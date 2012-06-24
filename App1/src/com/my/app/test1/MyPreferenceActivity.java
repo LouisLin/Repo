@@ -1,9 +1,7 @@
 /**
  * 
  */
-package com.my.app4;
-
-import com.my.app4.lib.MyToast;
+package com.my.app.test1;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -15,7 +13,7 @@ import android.preference.PreferenceManager;
  * @author Louis
  *
  */
-public class MyPrefActivity extends PreferenceActivity {
+public class MyPreferenceActivity extends PreferenceActivity {
 
 	/** Called when the activity is first created. */
 	@Override
@@ -23,7 +21,7 @@ public class MyPrefActivity extends PreferenceActivity {
 	    super.onCreate(savedInstanceState);
 	
 	    // TODO Auto-generated method stub
-	    addPreferencesFromResource(R.xml.notify);
+	    addPreferencesFromResource(R.xml.settings_notify);
 	}
 
 }

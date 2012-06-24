@@ -26,6 +26,7 @@ import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyLayoutInflater;
 import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
+import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -33,12 +34,17 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -46,8 +52,6 @@ import android.widget.TextView;
  *
  */
 public class MyBackgroundService extends Service {
-	private AlertDialog.Builder mAlertBuilder;
-	private AlertDialog mLastAlert = null;
 
 	private class MyTask extends AsyncTask<String, Integer, Integer> {
 
@@ -58,7 +62,14 @@ public class MyBackgroundService extends Service {
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
-			MyToast.show("AsyncTask:onPreExecute()");
+			boolean numNotify = MyPreferences.getBoolean("num_notify", false);
+			boolean succeed = MyPreferences.getBoolean("succeeding", false);
+			boolean preceding1 = MyPreferences.getBoolean("num_preceding_1", false);
+			boolean preceding3 = MyPreferences.getBoolean("num_preceding_3", false);
+			boolean preceding5 = MyPreferences.getBoolean("num_preceding_5", false);
+			boolean preceding10 = MyPreferences.getBoolean("num_preceding_10", false);
+			boolean preceding20 = MyPreferences.getBoolean("num_preceding_20", false);
+
 			super.onPreExecute();
 		}
 
@@ -151,8 +162,6 @@ public class MyBackgroundService extends Service {
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			// TODO Auto-generated method stub
-//			MyToast.show("AsyncTask:onProgressUpdate()");
-
 			super.onProgressUpdate(values);
 		}
 
@@ -170,19 +179,39 @@ public class MyBackgroundService extends Service {
 				TextView now = (TextView) view.findViewById(R.id.textView2);
 				now.setText(String.valueOf(app.getQueryDiagNo(0)));
 
-				if (mLastAlert != null) {
-					// TODO: no effect!! no entry, because One-Shot Service!!
-					MyToast.show("isSHowing=" + mLastAlert.isShowing());
-					MyAlertDialog.dismiss(mLastAlert);
+				AlertDialog alert = app.getGlobalAlert();
+				if (alert != null) {
+					MyAlertDialog.dismiss(alert);
 				}
-				mLastAlert = mAlertBuilder
+				alert = MyAlertDialog.getDefaultAlertDialogBuilder()
+					.setMessage("Progress")
 					.setView(view)
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							app.setGlobalAlert(null);
+							MyIntent.startSingleActivity(MyNotifiedActivity.class);
+						}
+					})
+					.setNeutralButton(null, null)
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							app.setGlobalAlert(null);							
+						}
+					})
 					.setOnCancelListener(new DialogInterface.OnCancelListener() {
 						
 						@Override
 						public void onCancel(DialogInterface dialog) {
 							// TODO Auto-generated method stub
+							app.setGlobalAlert(null);
 							Notification notification = MyNotification.getDefaultNotificationBuilder()
+								.setTicker(null)
 								.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
 								.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 								.getNotification();
@@ -190,19 +219,12 @@ public class MyBackgroundService extends Service {
 						}
 					})
 					.create();
-				MyAlertDialog.alert(mLastAlert);
+				MyAlertDialog.alert(alert);
+				app.setGlobalAlert(alert);
 			} else {
 				MyToast.show("result=" + result);
 			}
-/*
-			Notification notification = MyNotification.getDefaultNotificationBuilder()
-				.setNumber(39)
-				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
-				.getNotification();
-			MyNotification.notify(MyApp.ID, notification);
 
-			SystemClock.sleep(3000);
-*/
 			MyBackgroundService.this.stopSelf();
 			super.onPostExecute(result);
 		}
@@ -223,21 +245,6 @@ public class MyBackgroundService extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 
-		mAlertBuilder = MyAlertDialog.getDefaultAlertDialogBuilder()
-			.setMessage("Progress")
-//			.setView(view)
-			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					MyIntent.startOnlyOneActivity(MyNotifiedActivity.class);
-					
-				}
-			})
-			.setNeutralButton(null, null)
-			;
-
 		/* For One-Shot Service */
 		String serviceURI = getResources().getString(R.string.query_uri);
 		InputStream in = getResources().openRawResource(R.raw.query);
@@ -245,13 +252,12 @@ public class MyBackgroundService extends Service {
 		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
 		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
 		if (isdn == "") {
-			isdn = "0930123456";
+			isdn = MyPreferences.getString("isdn", "");
 		}
 		String queryXml = String.format(MyConvert.inputStream2String(in), sn, imsi, isdn);
 
 		AsyncTask<String, Integer, Integer> task =
 			new MyTask().execute(serviceURI, queryXml);
-//		SystemClock.sleep(3000);
 //		if (task.getStatus() != AsyncTask.Status.FINISHED) {
 //			task.cancel(true);
 //		}
@@ -262,19 +268,15 @@ public class MyBackgroundService extends Service {
 //	public int onStartCommand(Intent intent, int flags, int startId) {
 //		// TODO Auto-generated method stub
 //		MyToast.show(this, "flags=" + flags + ", startId=" + startId);
-//		try {
-//			new MyTask().execute(new URI("https://a.com"));
-//		} catch (URISyntaxException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+//		AsyncTask<String, Integer, Integer> task =
+//				new MyTask().execute(serviceURI, queryXml);
+//
 //		return super.onStartCommand(intent, flags, startId);
 //	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-//		MyToast.show(MyBackgroundService.class.getSimpleName() + ":onDestroy()");
 		super.onDestroy();
 	}
 

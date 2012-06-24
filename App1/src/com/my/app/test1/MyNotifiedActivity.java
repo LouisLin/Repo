@@ -36,44 +36,6 @@ public class MyNotifiedActivity extends Activity {
 	    // TODO Auto-generated method stub
 	    setContentView(R.layout.notified);
 	    
-		MyApplication app = ((MyApplication)getApplicationContext());
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-
-		TextView hospital = (TextView)findViewById(R.id.textView3);
-		hospital.setText(app.getQueryHospital(0));
-		TextView department = (TextView)findViewById(R.id.textView4);
-		department.setText(app.getQueryDepartment(0));
-		TextView regDate = (TextView)findViewById(R.id.textView5);
-		try {
-			regDate.setText(df.format(app.getQueryRegDate(0)));
-		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		TextView diagDate = (TextView)findViewById(R.id.textView6);
-		try {
-			diagDate.setText(df.format(app.getQueryDiagDate(0)));
-		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		TextView yourNum = (TextView)findViewById(R.id.textView1);
-		yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
-		TextView now = (TextView)findViewById(R.id.textView2);
-		now.setText(String.valueOf(app.getQueryDiagNo(0)));
-
 		Button stopAlarm = (Button)findViewById(R.id.button11);
 	    stopAlarm.setOnClickListener(new OnClickListener() {
 
@@ -89,6 +51,50 @@ public class MyNotifiedActivity extends Activity {
 	    });
 
         MyNotification.cancel(MyApp.ID);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		MyApplication app = ((MyApplication)getApplicationContext());
+
+		// Variable part:
+		TextView hospital = (TextView)findViewById(R.id.textView3);
+		hospital.setText(app.getQueryHospital(0));
+		TextView department = (TextView)findViewById(R.id.textView4);
+		department.setText(app.getQueryDepartment(0));
+		TextView regDate = (TextView)findViewById(R.id.textView5);
+		try {
+			regDate.setText(app.getDateFormat().format(app.getQueryRegDate(0)));
+		} catch (IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		TextView diagDate = (TextView)findViewById(R.id.textView6);
+		try {
+			diagDate.setText(app.getDateFormat().format(app.getQueryDiagDate(0)));
+		} catch (IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		TextView yourNum = (TextView)findViewById(R.id.textView1);
+		yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
+		TextView now = (TextView)findViewById(R.id.textView2);
+		now.setText(String.valueOf(app.getQueryDiagNo(0)));
+
+		super.onResume();
 	}
 
 	@Override

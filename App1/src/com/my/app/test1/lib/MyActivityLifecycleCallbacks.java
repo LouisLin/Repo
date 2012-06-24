@@ -44,8 +44,7 @@ public class MyActivityLifecycleCallbacks implements ActivityLifecycleCallbacks 
 	}
 
 	@Override
-	public void onActivitySaveInstanceState(Activity activity,
-			Bundle outState) {
+	public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
 		// TODO Auto-generated method stub
 //		MyToast.show("onActivitySaveInstanceState():" + activity.getClass().getSimpleName());			
 	}
