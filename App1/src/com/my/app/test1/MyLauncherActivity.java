@@ -42,9 +42,9 @@ public class MyLauncherActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.setInexactRepeating(10000,
-					MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
-				
+				((MyApplication)MyLauncherActivity.this.getApplicationContext())
+					.startAlarm(0);
+
 			}
 	    	
 	    });
@@ -54,7 +54,8 @@ public class MyLauncherActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.cancel(MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
+				((MyApplication)MyLauncherActivity.this.getApplicationContext())
+					.stopAlarm();
 				
 			}
 	    	

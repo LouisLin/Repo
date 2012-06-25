@@ -56,13 +56,16 @@ public class MyNotifiedActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.cancel(MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
+				((MyApplication)MyNotifiedActivity.this.getApplicationContext())
+					.stopAlarm();
 
 			}
 	    	
 	    });
 
-        MyNotification.cancel(MyApp.ID);
+//	    if (!getIntent().getBooleanExtra("polling", false)) {
+	    	MyNotification.cancel(MyApp.ID);
+//	    }
 	}
 
 	@Override
@@ -116,16 +119,18 @@ public class MyNotifiedActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		MyApplication app = ((MyApplication)getApplicationContext());
-
-		Notification notification = MyNotification.getDefaultNotificationBuilder()
-			.setDefaults(0)
-			.setTicker(null)
-			.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
-			.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
-			.getNotification();
-		MyNotification.notify(MyApp.ID, notification);
-
+//	    if (!getIntent().getBooleanExtra("polling", false)) {
+			MyApplication app = ((MyApplication)getApplicationContext());
+	
+			Notification notification = MyNotification.getDefaultNotificationBuilder()
+				.setDefaults(0)
+				.setTicker(null)
+				.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
+				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
+				.getNotification();
+			MyNotification.notify(MyApp.ID, notification);
+//	    }
+	    
 		super.onDestroy();
 	}
 

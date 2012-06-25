@@ -5,10 +5,10 @@
 	<RegRec index="0">
 		<Hospital>雙和醫院</Hospital>
 		<Department>內科一診</Department>
-		<RegDate>2012/06/01</RegDate>
-		<DiagDate>2012/06/05</DiagDate>
-		<RegNo>35</RegNo>
-		<DiagNo>19</DiagNo>
+		<RegDate>2012/06/20</RegDate>
+		<DiagDate>2012/06/25</DiagDate>
+		<RegNo>65</RegNo>
+		<DiagNo>21</DiagNo>
 		<EstTime>76</EstTime>
 	</RegRec>
 </QueryStatus>

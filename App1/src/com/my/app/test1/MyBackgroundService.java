@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -28,6 +31,8 @@ import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
+
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.Service;
@@ -41,6 +46,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract.Calendars;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -299,46 +305,94 @@ public class MyBackgroundService extends Service {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isNeededToNotify() {
 		// TODO Auto-generated method stub
-		SharedPreferences preferences = MyPreferences.get();
-		boolean numNotify = preferences.getBoolean("num_notify", false);
-		if (!numNotify) {
+		MyApplication app = ((MyApplication)getApplicationContext());
+
+		int dateDiff = 0;
+		try {
+			Date dateDiag = app.getQueryDiagDate(0);
+			String today = app.getDateFormat().format(new Date());
+			Date dateToday = app.getDateFormat().parse(today);
+//			Calendar..getInstance().get(Calendar.DATE);
+			dateDiff = dateDiag.getDate() - dateToday.getDate();
+			// TODO: dateDiag < dateToday, but dateDiag.getDate() > dateToday.getDate()
+//			dateDiff = dateDiag.compareTo(dateToday);
+		} catch (IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int numDiag = app.getQueryDiagNo(0);
+		int numDiff = app.getQueryRegNo(0) - numDiag;
+		MyToast.show("dateDiff=" + dateDiff + ", numDiff=" + numDiff);
+		app.adjustAlarmInterval(dateDiff, numDiff);
+
+		if (dateDiff < 0) {
+			return false;
+		}
+		if (numDiag <= 0) {
 			return false;
 		}
 
-		MyApplication app = ((MyApplication)getApplicationContext());
-		int diag = app.getQueryDiagNo(0);
-		if (diag < 0) {
-			return false;
+		SharedPreferences preferences = MyPreferences.get();
+		boolean dayNotify = preferences.getBoolean("day_notify", false);
+		if (dayNotify) {
+			boolean preceding2 = preferences.getBoolean("day_preceding_2", false);
+			if (preceding2 && (dateDiff == 2 || (dateDiff < 2 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;				
+			}
+			boolean preceding1 = preferences.getBoolean("day_preceding_1", false);
+			if (preceding1 && (dateDiff == 1 || (dateDiff < 1 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;				
+			}
 		}
-		int diff = app.getQueryRegNo(0) - diag;
-		boolean succeed = preferences.getBoolean("succeeding", false);
-		boolean myturn = preferences.getBoolean("my_turn", false);
-		boolean preceding1 = preferences.getBoolean("num_preceding_1", false);
-		boolean preceding3 = preferences.getBoolean("num_preceding_3", false);
-		boolean preceding5 = preferences.getBoolean("num_preceding_5", false);
-		boolean preceding10 = preferences.getBoolean("num_preceding_10", false);
-		boolean preceding20 = preferences.getBoolean("num_preceding_20", false);
-		if (preceding20 && diff == 20) {
-			return true;
-		} else if (preceding10 && diff == 10) {
-			return true;
-		} else if (preceding5 && diff == 5) {
-			
-			return true;
-		} else if (preceding3 && diff == 3) {
-			
-			return true;
-		} else if (preceding1 && diff == 1) {
-			
-			return true;
-		} else if (myturn && diff == 0) {
-			
-			return true;
-		} else if (succeed && diff < 0) {
-			
-			return true;
+		boolean numNotify = preferences.getBoolean("num_notify", false);
+		if (numNotify) {
+			boolean preceding20 = preferences.getBoolean("num_preceding_20", false);
+			if (preceding20 && (numDiff == 20 || (numDiff < 20 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean preceding10 = preferences.getBoolean("num_preceding_10", false);
+			if (preceding10 && (numDiff == 10 || (numDiff < 10 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean preceding5 = preferences.getBoolean("num_preceding_5", false);
+			if (preceding5 && (numDiff == 5 || (numDiff < 5 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean preceding3 = preferences.getBoolean("num_preceding_3", false);
+			if (preceding3 && (numDiff == 3 || (numDiff < 3 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean preceding1 = preferences.getBoolean("num_preceding_1", false);
+			if (preceding1 && (numDiff == 1 || (numDiff < 1 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean myturn = preferences.getBoolean("my_turn", false);
+			if (myturn && (numDiff == 0 || (numDiff < 0 && !app.hadNotified()))) {
+				app.setHadNotified(true);
+				return true;
+			}
+			boolean succeed = preferences.getBoolean("succeeding", false);
+			if (succeed && numDiff < 0) {
+				app.setHadNotified(true);
+				return true;
+			}
 		}
 
 		return false;

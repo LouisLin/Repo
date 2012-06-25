@@ -19,15 +19,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ComponentCallbacks;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -38,6 +42,20 @@ import android.util.Log;
  *
  */
 public class MyApplication extends Application {
+	final public static long INTERVAL_DAY = AlarmManager.INTERVAL_DAY;
+	final public static long INTERVAL_HALF_DAY = AlarmManager.INTERVAL_HALF_DAY;
+	final public static long INTERVAL_HOUR = AlarmManager.INTERVAL_HOUR;
+	final public static long INTERVAL_HALF_HOUR = AlarmManager.INTERVAL_HALF_HOUR;
+	final public static long INTERVAL_FIFTEEN_MINUTES = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+	final public static long INTERVAL_TEN_MINUTES = 60000;//600000;
+	final public static long INTERVAL_FIVE_MINUTES = 30000;//300000;
+	final public static long INTERVAL_THREE_MINUTE = 18000;//180000;
+	final public static long INTERVAL_MINUTE = 6000;//60000;
+	final public static long INTERVAL_HALF_MINUTE = 3000;//30000;
+
+	final public static long STARTUP_DELAY = 5;//INTERVAL_HALF_MINUTE;
+	final public static long DEF_ALARM_INTERVAL = 10000;//INTERVAL_HALF_DAY;
+
 	private static enum QueryTags {
 		ERROR,
 		REC_NUM,
@@ -53,10 +71,13 @@ public class MyApplication extends Application {
 		EST_TIME
 	};
 
+	private long mAlarmInterval = DEF_ALARM_INTERVAL;
+	private boolean mAlarmSet = false;
 	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	private String[] mTags = null;
 	private String[] mRecTags = null;
 	private Bundle mQueryStatus = new Bundle();
+	private	boolean mHadNotified = false;
 	private AlertDialog mGlobalAlert = null;
 	
 	private int mTEST_UpdateQueryCount = 0;
@@ -71,7 +92,7 @@ public class MyApplication extends Application {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Auto-generated method stub
-		MyToast.show("onConfigurationChanged()");
+//		MyToast.show("onConfigurationChanged()");
 
 		super.onConfigurationChanged(newConfig);
 	}
@@ -79,7 +100,7 @@ public class MyApplication extends Application {
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
-		MyToast.show("onCreate()");
+//		MyToast.show("onCreate()");
 
 		String isdn = MyPreferences.getString("isdn", null);
 		if (isdn == null) {
@@ -91,6 +112,8 @@ public class MyApplication extends Application {
 		
 		registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
 		registerComponentCallbacks(MyApp.getComponentCallbacks());
+		
+		startAlarm(MyApplication.STARTUP_DELAY);
 
 		super.onCreate();
 	}
@@ -98,14 +121,15 @@ public class MyApplication extends Application {
 	@Override
 	public void onLowMemory() {
 		// TODO Auto-generated method stub
-		MyToast.show("onLowMemory()");
+//		MyToast.show("onLowMemory()");
+
 		super.onLowMemory();
 	}
 
 	@Override
 	public void onTerminate() {
 		// TODO Auto-generated method stub
-		MyToast.show("onTerminate()");
+//		MyToast.show("onTerminate()");
 		
 		unregisterComponentCallbacks(MyApp.getComponentCallbacks());
 		unregisterActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
@@ -116,9 +140,71 @@ public class MyApplication extends Application {
 	@Override
 	public void onTrimMemory(int level) {
 		// TODO Auto-generated method stub
-		MyToast.show("onTrimMemory()");
+//		MyToast.show("onTrimMemory()");
 
 		super.onTrimMemory(level);
+	}
+
+	public long getAlarmInterval() {
+		return mAlarmInterval;
+	}
+
+
+	public void setAlarmInterval(long interval) {
+		mAlarmInterval = interval;
+	}
+
+
+	public void adjustAlarmInterval(int dateDiff, int numDiff) {
+		long oldInterval = mAlarmInterval;
+
+		if (dateDiff != 0) {
+			mAlarmInterval = MyApplication.INTERVAL_HALF_DAY;
+		} else {
+			if (numDiff > 20) {
+				mAlarmInterval = MyApplication.INTERVAL_TEN_MINUTES;
+			} else if (numDiff > 10) {
+				mAlarmInterval = MyApplication.INTERVAL_FIVE_MINUTES;
+			} else if (numDiff > 5) {
+				mAlarmInterval = MyApplication.INTERVAL_THREE_MINUTE;
+			} else if (numDiff > 3) {				
+				mAlarmInterval = MyApplication.INTERVAL_MINUTE;
+			} else if (numDiff > 0) {
+				mAlarmInterval = MyApplication.INTERVAL_HALF_MINUTE;
+			} else {
+				mAlarmInterval = MyApplication.INTERVAL_MINUTE;
+			}
+		}
+		
+		if (mAlarmInterval != oldInterval) {
+			this.stopAlarm();
+			this.startAlarm(this.getAlarmInterval());
+		}
+	}
+
+	public boolean isAlarmSet() {
+		return mAlarmSet;
+	}
+
+	public void setAlarmSet(boolean set) {
+		mAlarmSet = set;
+	}
+
+	public void startAlarm(long delay) {
+		// TODO Auto-generated method stub
+		if (!this.isAlarmSet()) {
+			this.setAlarmSet(true);
+			MyAlarm.setInexactRepeating(delay,
+				this.getAlarmInterval(),
+				MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
+		}
+	}
+	
+	public void stopAlarm() {
+//		if (this.isAlarmSet()) {
+			MyPendingIntent.getBroadcast(MyAlarmReceiver.class);
+			this.setAlarmSet(false);
+//		}
 	}
 
 	public SimpleDateFormat getDateFormat() {
@@ -291,6 +377,16 @@ public class MyApplication extends Application {
 		}
 		return bundle.getInt(mRecTags[QueryRecTags.DIAG_NO.ordinal()]);
 	}
+
+	public boolean hadNotified() {
+		return mHadNotified;
+	}
+
+
+	public void setHadNotified(boolean notified) {
+		mHadNotified = notified;
+	}
+
 
 	public AlertDialog getGlobalAlert() {
 		return mGlobalAlert;
