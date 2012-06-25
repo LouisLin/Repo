@@ -36,15 +36,16 @@ public class MyNotifiedActivity extends Activity {
 	
 	    // TODO Auto-generated method stub
 	    setContentView(R.layout.notified);
-	    getActionBar().setTitle("Notification");
-	    
+
 	    Button query = (Button)findViewById(R.id.button10);
 	    query.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyIntent.startService(MyBackgroundService.class);
+				Bundle bundle = new Bundle();
+				bundle.putBoolean("polling", true);
+				MyIntent.startService(MyBackgroundService.class, bundle);
 			}
 	    	
 	    });
@@ -55,9 +56,7 @@ public class MyNotifiedActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyAlarm.cancel(PendingIntent.getBroadcast(
-					MyNotifiedActivity.this, 0,
-					new Intent(MyNotifiedActivity.this, MyAlarmReceiver.class), 0));
+				MyAlarm.cancel(MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
 
 			}
 	    	
@@ -69,9 +68,13 @@ public class MyNotifiedActivity extends Activity {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		MyApplication app = ((MyApplication)getApplicationContext());
+	    if (getIntent().getBooleanExtra("polling", false)) {
+	    	getActionBar().setTitle("QueryStatus");
+	    } else {
+	    	getActionBar().setTitle("Notification");
+	    }
 
-		// Variable part:
+	    MyApplication app = ((MyApplication)getApplicationContext());
 		TextView hospital = (TextView)findViewById(R.id.textView3);
 		hospital.setText(app.getQueryHospital(0));
 		TextView department = (TextView)findViewById(R.id.textView4);
@@ -124,6 +127,18 @@ public class MyNotifiedActivity extends Activity {
 		MyNotification.notify(MyApp.ID, notification);
 
 		super.onDestroy();
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		// TODO Auto-generated method stub
+		super.onNewIntent(intent);
+		/*
+		 * Because this Activity started with FLAG_ACTIVITY_SINGLE_TOP,
+		 * so getIntent() will always get the original one.
+		 * Inherit onNewIntent() to over-write intent.
+		 */
+		setIntent(intent);
 	}
 
 }

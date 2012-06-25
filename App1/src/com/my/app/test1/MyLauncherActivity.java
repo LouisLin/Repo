@@ -65,7 +65,9 @@ public class MyLauncherActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				MyIntent.startService(MyBackgroundService.class);
+				Bundle bundle = new Bundle();
+				bundle.putBoolean("polling", true);
+				MyIntent.startService(MyBackgroundService.class, bundle);
 			}
 	    	
 	    });

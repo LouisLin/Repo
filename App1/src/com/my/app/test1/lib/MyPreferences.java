@@ -103,4 +103,8 @@ public class MyPreferences {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyApp.getContext());
 		preferences.unregisterOnSharedPreferenceChangeListener(listener);
 	}
+
+	public static SharedPreferences get() {
+		return PreferenceManager.getDefaultSharedPreferences(MyApp.getContext());		
+	}
 }

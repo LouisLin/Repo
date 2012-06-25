@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -169,66 +170,69 @@ public class MyBackgroundService extends Service {
 		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
 			if (result == 0) {
-				MyIntent.startSingleActivity(MyNotifiedActivity.class);
-				/*
-				final MyApplication app = ((MyApplication)getApplicationContext());
-
-				MyNotification.notify(MyApp.ID, MyNotification.getSoundVibrateNotification());
-
-				View view = MyLayoutInflater.inflate(R.layout.alert);
-				TextView yourNum = (TextView)view.findViewById(R.id.textView1);
-				yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
-				TextView now = (TextView) view.findViewById(R.id.textView2);
-				now.setText(String.valueOf(app.getQueryDiagNo(0)));
-
-				AlertDialog alert = app.getGlobalAlert();
-				if (alert != null) {
-					MyAlertDialog.dismiss(alert);
+				if (MyBackgroundService.this.mIntent.getBooleanExtra("polling", false)) {
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("polling", true);
+					MyIntent.startSingleActivity(MyNotifiedActivity.class, bundle);					
+				} else if (MyBackgroundService.this.isNeededToNotify()){
+					final MyApplication app = ((MyApplication)getApplicationContext());
+	
+					MyNotification.notify(MyApp.ID, MyNotification.getSoundVibrateNotification());
+	
+					View view = MyLayoutInflater.inflate(R.layout.alert);
+					TextView yourNum = (TextView)view.findViewById(R.id.textView1);
+					yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
+					TextView now = (TextView) view.findViewById(R.id.textView2);
+					now.setText(String.valueOf(app.getQueryDiagNo(0)));
+	
+					AlertDialog alert = app.getGlobalAlert();
+					if (alert != null) {
+						MyAlertDialog.dismiss(alert);
+					}
+					alert = MyAlertDialog.getDefaultAlertDialogBuilder()
+						.setMessage("Progress")
+						.setView(view)
+						.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								app.setGlobalAlert(null);
+								MyIntent.startSingleActivity(MyNotifiedActivity.class);
+							}
+						})
+						.setNeutralButton(null, null)
+						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								app.setGlobalAlert(null);							
+							}
+						})
+						.setOnCancelListener(new DialogInterface.OnCancelListener() {
+							
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								// TODO Auto-generated method stub
+								app.setGlobalAlert(null);
+								Notification notification = MyNotification.getDefaultNotificationBuilder()
+									.setTicker(null)
+									.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
+									.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
+									.getNotification();
+								MyNotification.notify(MyApp.ID, notification);							
+							}
+						})
+						.create();
+					MyAlertDialog.alert(alert);
+					app.setGlobalAlert(alert);
 				}
-				alert = MyAlertDialog.getDefaultAlertDialogBuilder()
-					.setMessage("Progress")
-					.setView(view)
-					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-						
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-							app.setGlobalAlert(null);
-							MyIntent.startSingleActivity(MyNotifiedActivity.class);
-						}
-					})
-					.setNeutralButton(null, null)
-					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-						
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-							app.setGlobalAlert(null);							
-						}
-					})
-					.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							// TODO Auto-generated method stub
-							app.setGlobalAlert(null);
-							Notification notification = MyNotification.getDefaultNotificationBuilder()
-								.setTicker(null)
-								.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
-								.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
-								.getNotification();
-							MyNotification.notify(MyApp.ID, notification);							
-						}
-					})
-					.create();
-				MyAlertDialog.alert(alert);
-				app.setGlobalAlert(alert);
-				*/
 			} else {
 				MyToast.show("result=" + result);
 			}
 
-			MyBackgroundService.this.stopSelf();
+			MyBackgroundService.this.stopSelfResult(mStartId);
 			super.onPostExecute(result);
 		}
 
@@ -237,18 +241,32 @@ public class MyBackgroundService extends Service {
 			// TODO Auto-generated method stub
 			MyToast.show("AsyncTask:onCancelled()");
 
-			MyBackgroundService.this.stopSelf();
+			MyBackgroundService.this.stopSelfResult(mStartId);
 			super.onCancelled(result);
 		}
 
 	}
+
+	private Intent mIntent;
+	private int mFlags;
+	private int mStartId;
 
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
 
-		/* For One-Shot Service */
+	}
+
+	/* For long-term Service */
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// TODO Auto-generated method stub
+		mIntent = intent;
+		mFlags = flags;
+		mStartId = startId;
+//		MyToast.show("flags=" + flags + ", startId=" + startId + ", intent=" + intent.getBooleanExtra("polling", false));
+
 		String serviceURI = getResources().getString(R.string.query_uri);
 		InputStream in = getResources().openRawResource(R.raw.query);
 		String sn = Build.SERIAL;
@@ -264,30 +282,66 @@ public class MyBackgroundService extends Service {
 //		if (task.getStatus() != AsyncTask.Status.FINISHED) {
 //			task.cancel(true);
 //		}
-	}
 
-	/* For long-term Service */
-//	@Override
-//	public int onStartCommand(Intent intent, int flags, int startId) {
-//		// TODO Auto-generated method stub
-//		MyToast.show(this, "flags=" + flags + ", startId=" + startId);
-//		AsyncTask<String, Integer, Integer> task =
-//				new MyTask().execute(serviceURI, queryXml);
-//
-//		return super.onStartCommand(intent, flags, startId);
-//	}
+		return START_NOT_STICKY;
+	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+
 		super.onDestroy();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
-		MyToast.show("onBind()");
 		return null;
+	}
+
+	public boolean isNeededToNotify() {
+		// TODO Auto-generated method stub
+		SharedPreferences preferences = MyPreferences.get();
+		boolean numNotify = preferences.getBoolean("num_notify", false);
+		if (!numNotify) {
+			return false;
+		}
+
+		MyApplication app = ((MyApplication)getApplicationContext());
+		int diag = app.getQueryDiagNo(0);
+		if (diag < 0) {
+			return false;
+		}
+		int diff = app.getQueryRegNo(0) - diag;
+		boolean succeed = preferences.getBoolean("succeeding", false);
+		boolean myturn = preferences.getBoolean("my_turn", false);
+		boolean preceding1 = preferences.getBoolean("num_preceding_1", false);
+		boolean preceding3 = preferences.getBoolean("num_preceding_3", false);
+		boolean preceding5 = preferences.getBoolean("num_preceding_5", false);
+		boolean preceding10 = preferences.getBoolean("num_preceding_10", false);
+		boolean preceding20 = preferences.getBoolean("num_preceding_20", false);
+		if (preceding20 && diff == 20) {
+			return true;
+		} else if (preceding10 && diff == 10) {
+			return true;
+		} else if (preceding5 && diff == 5) {
+			
+			return true;
+		} else if (preceding3 && diff == 3) {
+			
+			return true;
+		} else if (preceding1 && diff == 1) {
+			
+			return true;
+		} else if (myturn && diff == 0) {
+			
+			return true;
+		} else if (succeed && diff < 0) {
+			
+			return true;
+		}
+
+		return false;
 	}
 
 }
