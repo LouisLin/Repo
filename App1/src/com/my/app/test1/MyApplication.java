@@ -55,6 +55,9 @@ public class MyApplication extends Application {
 
 	final public static long STARTUP_DELAY = 5;//INTERVAL_HALF_MINUTE;
 	final public static long DEF_ALARM_INTERVAL = 10000;//INTERVAL_HALF_DAY;
+	
+	final public static String PREF_REGISTERED = "registered";
+	final public static String PREF_ISDN = "isdn";
 
 	private static enum QueryTags {
 		ERROR,
