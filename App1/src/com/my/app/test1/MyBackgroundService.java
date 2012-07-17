@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 import com.my.app.test1.lib.MyAlertDialog;
 import com.my.app.test1.lib.MyApp;
 import com.my.app.test1.lib.MyConvert;
+import com.my.app.test1.lib.MyDate;
 import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyLayoutInflater;
 import com.my.app.test1.lib.MyNotification;
@@ -69,13 +70,6 @@ public class MyBackgroundService extends Service {
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
-			boolean numNotify = MyPreferences.getBoolean("num_notify", false);
-			boolean succeed = MyPreferences.getBoolean("succeeding", false);
-			boolean preceding1 = MyPreferences.getBoolean("num_preceding_1", false);
-			boolean preceding3 = MyPreferences.getBoolean("num_preceding_3", false);
-			boolean preceding5 = MyPreferences.getBoolean("num_preceding_5", false);
-			boolean preceding10 = MyPreferences.getBoolean("num_preceding_10", false);
-			boolean preceding20 = MyPreferences.getBoolean("num_preceding_20", false);
 
 			super.onPreExecute();
 		}
@@ -182,8 +176,22 @@ public class MyBackgroundService extends Service {
 					MyIntent.startSingleActivity(MyNotifiedActivity.class, bundle);					
 				} else if (MyBackgroundService.this.isNeededToNotify()){
 					final MyApplication app = ((MyApplication)getApplicationContext());
-	
-					MyNotification.notify(MyApp.ID, MyNotification.getSoundVibrateNotification());
+
+					SharedPreferences preferences = MyPreferences.get();
+					boolean sound = preferences.getBoolean("sound", false);
+					boolean vibrate = preferences.getBoolean("vibrate", false);
+					if (sound && vibrate) {
+						MyNotification.notify(MyApp.ID,
+							MyNotification.getSoundVibrateNotification());
+					} else if (sound) {
+						MyNotification.notify(MyApp.ID,
+							MyNotification.getSoundNotification());
+					} else if (vibrate) {
+						MyNotification.notify(MyApp.ID,
+							MyNotification.getVibrateNotification());
+					} else {
+						// Do nothing
+					}
 	
 					View view = MyLayoutInflater.inflate(R.layout.alert);
 					TextView yourNum = (TextView)view.findViewById(R.id.textView1);
@@ -213,7 +221,8 @@ public class MyBackgroundService extends Service {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								// TODO Auto-generated method stub
-								app.setGlobalAlert(null);							
+								app.setGlobalAlert(null);
+								app.stopAlarm();
 							}
 						})
 						.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -224,7 +233,7 @@ public class MyBackgroundService extends Service {
 								app.setGlobalAlert(null);
 								Notification notification = MyNotification.getDefaultNotificationBuilder()
 									.setTicker(null)
-									.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
+									.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 									.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 									.getNotification();
 								MyNotification.notify(MyApp.ID, notification);							
@@ -275,13 +284,14 @@ public class MyBackgroundService extends Service {
 
 		String serviceURI = getResources().getString(R.string.query_uri);
 		InputStream in = getResources().openRawResource(R.raw.query);
-		String sn = Build.SERIAL;
+//		String sn = Build.SERIAL;
+		String imei = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
 		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
 		if (isdn == "") {
-			isdn = MyPreferences.getString("isdn", "");
+			isdn = MyPreferences.getString(MyApplication.PREF_ISDN, "");
 		}
-		String queryXml = String.format(MyConvert.inputStream2String(in), sn, imsi, isdn);
+		String queryXml = String.format(MyConvert.inputStream2String(in), imei, imsi, isdn);
 
 		AsyncTask<String, Integer, Integer> task =
 			new MyTask().execute(serviceURI, queryXml);
@@ -305,7 +315,6 @@ public class MyBackgroundService extends Service {
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	public boolean isNeededToNotify() {
 		// TODO Auto-generated method stub
 		MyApplication app = ((MyApplication)getApplicationContext());
@@ -313,12 +322,8 @@ public class MyBackgroundService extends Service {
 		int dateDiff = 0;
 		try {
 			Date dateDiag = app.getQueryDiagDate(0);
-			String today = app.getDateFormat().format(new Date());
-			Date dateToday = app.getDateFormat().parse(today);
-//			Calendar..getInstance().get(Calendar.DATE);
-			dateDiff = dateDiag.getDate() - dateToday.getDate();
-			// TODO: dateDiag < dateToday, but dateDiag.getDate() > dateToday.getDate()
-//			dateDiff = dateDiag.compareTo(dateToday);
+			Date dateToday = MyDate.today();
+			dateDiff = MyDate.dayDiffence(dateDiag, dateToday);
 		} catch (IndexOutOfBoundsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

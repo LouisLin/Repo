@@ -125,7 +125,7 @@ public class MyNotifiedActivity extends Activity {
 			Notification notification = MyNotification.getDefaultNotificationBuilder()
 				.setDefaults(0)
 				.setTicker(null)
-				.setContentInfo(app.getQueryDiagNo(0) + "-" + app.getQueryRegNo(0))
+				.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 				.getNotification();
 			MyNotification.notify(MyApp.ID, notification);

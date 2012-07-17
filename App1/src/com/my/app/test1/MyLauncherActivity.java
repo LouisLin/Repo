@@ -7,6 +7,7 @@ import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyApp;
 import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyPendingIntent;
+import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
 
 import android.app.Activity;
@@ -33,9 +34,20 @@ public class MyLauncherActivity extends Activity {
 	
 	    // TODO Auto-generated method stub
 //	    getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-	    setContentView(R.layout.main);
-	    
-	    // Fix part:
+		setContentView(R.layout.main);
+
+		Button query = (Button)findViewById(R.id.button3);
+	    query.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Bundle bundle = new Bundle();
+				bundle.putBoolean("polling", true);
+				MyIntent.startService(MyBackgroundService.class, bundle);
+			}
+	    	
+	    });
 		Button startAlarm = (Button)findViewById(R.id.button1);
 	    startAlarm.setOnClickListener(new OnClickListener() {
 
@@ -60,19 +72,6 @@ public class MyLauncherActivity extends Activity {
 			}
 	    	
 	    });
-	    Button query = (Button)findViewById(R.id.button3);
-	    query.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Bundle bundle = new Bundle();
-				bundle.putBoolean("polling", true);
-				MyIntent.startService(MyBackgroundService.class, bundle);
-			}
-	    	
-	    });
-	    
 	}
 
 	@Override

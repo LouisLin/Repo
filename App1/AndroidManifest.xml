@@ -19,7 +19,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity><activity android:name=".MyPreferenceActivity">
+        </activity><activity android:name=".MyRegisterActivity"></activity><activity android:name=".MyPreferenceActivity">
         </activity><receiver android:name=".MyBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -27,6 +27,7 @@
         </receiver><receiver android:name=".MyAlarmReceiver"></receiver><service android:name=".MyBackgroundService">
         </service><activity android:name=".MyNotifiedActivity">
         </activity>
+        
         
         
         
