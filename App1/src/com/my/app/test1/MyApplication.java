@@ -5,7 +5,6 @@ package com.my.app.test1;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,9 +20,9 @@ import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyPreferences;
-import com.my.app.test1.lib.MyToast;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -105,9 +104,17 @@ public class MyApplication extends Application {
 		// TODO Auto-generated method stub
 //		MyToast.show("onCreate()");
 
-		String isdn = MyPreferences.getString("isdn", null);
-		if (isdn == null) {
-			MyPreferences.setString("isdn", "0987654321");
+		boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
+		if (!registered) {
+			MyIntent.startActivity(MyRegisterActivity.class);
+		}
+
+//		boolean registered = MyPreferences.getBoolean(PREF_REGISTERED, false);
+		if (registered) {
+			String isdn = MyPreferences.getString(PREF_ISDN, null);
+			if (isdn == null) {
+				MyPreferences.setString(PREF_ISDN, "0987654321");
+			}
 		}
 
 		mTags = getResources().getStringArray(R.array.query_status_tag);
@@ -180,8 +187,7 @@ public class MyApplication extends Application {
 		}
 		
 		if (mAlarmInterval != oldInterval) {
-			this.stopAlarm();
-			this.startAlarm(this.getAlarmInterval());
+			this.restartAlarm(this.getAlarmInterval());
 		}
 	}
 
@@ -205,9 +211,20 @@ public class MyApplication extends Application {
 	
 	public void stopAlarm() {
 //		if (this.isAlarmSet()) {
-			MyPendingIntent.getBroadcast(MyAlarmReceiver.class);
+			MyAlarm.cancel(
+				MyPendingIntent.getBroadcast(MyAlarmReceiver.class));
 			this.setAlarmSet(false);
 //		}
+	}
+	
+	public void restartAlarm(long delay) {
+		if (this.isAlarmSet()) {
+			MyAlarm.setInexactRepeating(delay,
+				this.getAlarmInterval(),
+				MyPendingIntent.getBroadcast(MyAlarmReceiver.class));			
+		} else {
+			this.startAlarm(delay);
+		}
 	}
 
 	public SimpleDateFormat getDateFormat() {
@@ -263,7 +280,6 @@ public class MyApplication extends Application {
 				NodeList nodes = root.getElementsByTagName(mRecTags[eRecTags.ordinal()]);
 				if (nodes.getLength() > 0) {
 					String value = nodes.item(rec).getFirstChild().getNodeValue();
-					Date date;
 					switch (eRecTags) {
 					case HOSPITAL:
 						recBundle.putString(mRecTags[eRecTags.ordinal()], value);
@@ -342,7 +358,8 @@ public class MyApplication extends Application {
 		if (value == null) {
 			throw new NullPointerException();
 		}
-		return mDateFormat.parse(value);
+//		return mDateFormat.parse(value);
+		return MyDate.yesterday();
 	}
 
 	public Date getQueryDiagDate(int index) throws IndexOutOfBoundsException, NullPointerException, ParseException {
@@ -354,7 +371,8 @@ public class MyApplication extends Application {
 		if (value == null) {
 			throw new NullPointerException();
 		}
-		return mDateFormat.parse(value);
+//		return mDateFormat.parse(value);
+		return MyDate.today();
 	}
 
 	public int getQueryRegNo(int index) throws IndexOutOfBoundsException {
