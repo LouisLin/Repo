@@ -61,6 +61,10 @@ public class MyApplication extends Application {
 	final public static String PREF_REGISTERED = "registered";
 	final public static String PREF_ISDN = "isdn";
 
+	private static enum RegisterTags {
+		ERROR
+	};
+
 	private static enum QueryTags {
 		ERROR,
 		REC_NUM,
@@ -79,6 +83,8 @@ public class MyApplication extends Application {
 	private long mAlarmInterval = DEF_ALARM_INTERVAL;
 	private boolean mAlarmSet = false;
 	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	private String[] mRegTags = null;
+	private Bundle mRegisterStatus = new Bundle();
 	private String[] mTags = null;
 	private String[] mRecTags = null;
 	private Bundle mQueryStatus = new Bundle();
@@ -107,26 +113,24 @@ public class MyApplication extends Application {
 		// TODO Auto-generated method stub
 //		MyToast.show("onCreate()");
 
-		boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
+		// for TEST ONLY
+		mRegTags = getResources().getStringArray(R.array.register_status_tag);
+
+		boolean registered = MyPreferences.getBoolean(PREF_REGISTERED, false);
 		if (!registered) {
-			MyIntent.startActivity(MyRegisterActivity.class);
-		}
+			// marked for TEST
+//			mRegTags = getResources().getStringArray(R.array.register_status_tag);
 
-//		boolean registered = MyPreferences.getBoolean(PREF_REGISTERED, false);
-		if (registered) {
-			String isdn = MyPreferences.getString(PREF_ISDN, null);
-			if (isdn == null) {
-				MyPreferences.setString(PREF_ISDN, "0987654321");
-			}
+//			MyIntent.startActivity(MyRegisterActivity.class);
+		} else {
+			mTags = getResources().getStringArray(R.array.query_status_tag);
+			mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
+			
+			registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
+			registerComponentCallbacks(MyApp.getComponentCallbacks());
+			
+			startAlarm(MyApplication.STARTUP_DELAY);
 		}
-
-		mTags = getResources().getStringArray(R.array.query_status_tag);
-		mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
-		
-		registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
-		registerComponentCallbacks(MyApp.getComponentCallbacks());
-		
-		startAlarm(MyApplication.STARTUP_DELAY);
 
 		super.onCreate();
 	}
@@ -234,6 +238,34 @@ public class MyApplication extends Application {
 		return mDateFormat;
 	}
 
+	public void updateRegisterStatus(InputStream registerStatus) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();   
+		Document doc = builder.parse(registerStatus);
+		Element root = doc.getDocumentElement();
+		/*
+		<RegStatus>
+			<Error>0</Error>
+		</RegStatus>
+		*/
+		for (RegisterTags eTags : RegisterTags.values()) {
+			NodeList nodes = root.getElementsByTagName(mRegTags[eTags.ordinal()]);
+			if (nodes.getLength() > 0) {
+				String value;
+				switch (eTags) {
+				case ERROR:
+					value = nodes.item(0).getFirstChild().getNodeValue();
+					mRegisterStatus.putInt(mRegTags[eTags.ordinal()], Integer.parseInt(value));
+					break;
+				}
+			}
+		}
+	}
+
+	public int getRegisterError() {
+		return mRegisterStatus.getInt(mRegTags[RegisterTags.ERROR.ordinal()]);
+	}
+	
 	public void updateQueryStatus(InputStream queryStatus) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();   

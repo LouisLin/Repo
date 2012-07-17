@@ -31,12 +31,15 @@ public class MyLauncherActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	
-	    // TODO Auto-generated method stub
+
+		boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
+		if (!registered) {
+			MyIntent.startActivity(MyRegisterActivity.class);
+		} else {
 //	    getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		setContentView(R.layout.main);
 
-		Button query = (Button)findViewById(R.id.button3);
+		Button query = (Button)findViewById(R.id.button1);
 	    query.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -48,7 +51,18 @@ public class MyLauncherActivity extends Activity {
 			}
 	    	
 	    });
-		Button startAlarm = (Button)findViewById(R.id.button1);
+		Button unregister = (Button)findViewById(R.id.button2);
+		unregister.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				MyPreferences.setBoolean(MyApplication.PREF_REGISTERED, false);
+
+			}
+	    	
+	    });
+		Button startAlarm = (Button)findViewById(R.id.button3);
 	    startAlarm.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -60,7 +74,7 @@ public class MyLauncherActivity extends Activity {
 			}
 	    	
 	    });
-	    Button stopAlarm = (Button)findViewById(R.id.button2);
+	    Button stopAlarm = (Button)findViewById(R.id.button4);
 	    stopAlarm.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -72,6 +86,7 @@ public class MyLauncherActivity extends Activity {
 			}
 	    	
 	    });
+		}
 	}
 
 	@Override
