@@ -113,21 +113,18 @@ public class MyApplication extends Application {
 		// TODO Auto-generated method stub
 //		MyToast.show("onCreate()");
 
-		// for TEST ONLY
-		mRegTags = getResources().getStringArray(R.array.register_status_tag);
+		registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
+		registerComponentCallbacks(MyApp.getComponentCallbacks());
 
+		mTags = getResources().getStringArray(R.array.query_status_tag);
+		mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
+		
 		boolean registered = MyPreferences.getBoolean(PREF_REGISTERED, false);
 		if (!registered) {
-			// marked for TEST
-//			mRegTags = getResources().getStringArray(R.array.register_status_tag);
-
-//			MyIntent.startActivity(MyRegisterActivity.class);
+			mRegTags = getResources().getStringArray(R.array.register_status_tag);
 		} else {
-			mTags = getResources().getStringArray(R.array.query_status_tag);
-			mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
-			
-			registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
-			registerComponentCallbacks(MyApp.getComponentCallbacks());
+			// for TEST ONLY
+			mRegTags = getResources().getStringArray(R.array.register_status_tag);
 			
 			startAlarm(MyApplication.STARTUP_DELAY);
 		}

@@ -61,7 +61,7 @@ import android.widget.TextView;
  */
 public class MyBackgroundService extends Service {
 
-	private class MyTask extends AsyncTask<String, Integer, Integer> {
+	private class MyQueryTask extends AsyncTask<String, Integer, Integer> {
 
 		/*
 		 * This step is normally used to setup the task,
@@ -150,7 +150,7 @@ public class MyBackgroundService extends Service {
 				e.printStackTrace();
 			}
 			*/
-			publishProgress(100);
+			publishProgress(10000);
 
 			return result;
 		}
@@ -265,6 +265,7 @@ public class MyBackgroundService extends Service {
 	private Intent mIntent;
 	private int mFlags;
 	private int mStartId;
+	private MyQueryTask mTask;
 
 	@Override
 	public void onCreate() {
@@ -293,11 +294,32 @@ public class MyBackgroundService extends Service {
 		}
 		String queryXml = String.format(MyConvert.inputStream2String(in), imei, imsi, isdn);
 
-		AsyncTask<String, Integer, Integer> task =
-			new MyTask().execute(serviceURI, queryXml);
-//		if (task.getStatus() != AsyncTask.Status.FINISHED) {
-//			task.cancel(true);
-//		}
+		mTask = (MyQueryTask)new MyQueryTask().execute(serviceURI, queryXml);
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				int i;
+
+				for (i = 0; i < 10; ++i) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (mTask.getStatus() == AsyncTask.Status.FINISHED) {
+						break;
+					}
+				}
+				if (i >= 10) {
+					mTask.cancel(true);
+				}
+				
+			}
+			
+		}).start();
 
 		return START_NOT_STICKY;
 	}
@@ -305,6 +327,9 @@ public class MyBackgroundService extends Service {
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		if (mTask.getStatus() != AsyncTask.Status.FINISHED) {
+			mTask.cancel(true);
+		}
 
 		super.onDestroy();
 	}

@@ -54,12 +54,12 @@
             android:inputType="textPersonName" >
         </EditText>
     </GridLayout>
-
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Register" />
+        android:text="Commit" />
 
 </LinearLayout>

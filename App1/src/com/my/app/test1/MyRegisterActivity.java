@@ -5,9 +5,18 @@ package com.my.app.test1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyAlertDialog;
@@ -23,6 +32,7 @@ import com.my.app.test1.lib.MyToast;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -41,7 +51,9 @@ import android.widget.TextView;
  */
 public class MyRegisterActivity extends Activity {
 
-	private class MyTask extends AsyncTask<String, Integer, Integer> {
+	private class MyRegTask extends AsyncTask<String, Integer, Integer> {
+		public ProgressDialog mProgressDlg = null;
+		private	Exception mException = null;
 
 		/*
 		 * This step is normally used to setup the task,
@@ -50,6 +62,8 @@ public class MyRegisterActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
+			mProgressDlg = ProgressDialog.show(MyRegisterActivity.this,
+				"Registeration", "Please wait while registering");
 
 			super.onPreExecute();
 		}
@@ -73,17 +87,26 @@ public class MyRegisterActivity extends Activity {
 			try {
 				app.updateRegisterStatus(in);
 				result = app.getRegisterError(); 
-			} catch (ParserConfigurationException e1) {
+			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (SAXException e1) {
+				e.printStackTrace();
+				mException = e;
+			} catch (SAXException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
+				e.printStackTrace();
+				mException = e;
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
+				mException = e;
 			}
-			/*
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+/*
 			URI uri = null;
 			try {
 				uri = new URI(params[0]);
@@ -116,21 +139,26 @@ public class MyRegisterActivity extends Activity {
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mException = e;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mException = e;
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mException = e;
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mException = e;
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mException = e;
 			}
-			*/
-			publishProgress(100);
+*/
+			publishProgress(10000);
 
 			return result;
 		}
@@ -149,18 +177,39 @@ public class MyRegisterActivity extends Activity {
 		@Override
 		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
+			mProgressDlg.dismiss();
+			
 			if (result == 0) {
 				MyPreferences.setBoolean(MyApplication.PREF_REGISTERED, true);
 				MyPreferences.setString(MyApplication.PREF_ISDN,
 					MyRegisterActivity.this.mPhoneNum.getText().toString());
 
-				AlertDialog alert = MyAlertDialog.getDefaultAlertDialogBuilder()
-					.setMessage("Register OK!")
-					.create();
-				MyAlertDialog.alert(alert);
-				MyRegisterActivity.this.finish();
+				if (!MyRegisterActivity.this.isFinishing()) {
+					AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+						.setMessage("Register OK!")
+						.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								// TODO Auto-generated method stub
+								MyIntent.startActivity(MyLauncherActivity.class);
+							}
+						})
+						.create();
+					MyAlertDialog.alert(alert);
+					MyRegisterActivity.this.finish();
+				}
+
+				MyApplication app = ((MyApplication)getApplicationContext());
+				app.startAlarm(MyApplication.STARTUP_DELAY);
 			} else {
-				MyToast.show("result=" + result);
+				assert(mException != null);
+//				MyToast.show("result=" + result);
+				AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+						.setTitle("Registeration Failed")
+						.setMessage(mException.getLocalizedMessage())
+						.create();
+				MyAlertDialog.alert(alert);
 			}
 
 			super.onPostExecute(result);
@@ -169,6 +218,8 @@ public class MyRegisterActivity extends Activity {
 		@Override
 		protected void onCancelled(Integer result) {
 			// TODO Auto-generated method stub
+			mProgressDlg.dismiss();
+
 			MyToast.show("AsyncTask:onCancelled()");
 
 			super.onCancelled(result);
@@ -178,6 +229,7 @@ public class MyRegisterActivity extends Activity {
 
 	private EditText mPhoneNum;
 	private EditText mName;
+	static private MyRegTask mTask = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -189,7 +241,7 @@ public class MyRegisterActivity extends Activity {
 		
 		mPhoneNum = (EditText)findViewById(R.id.editText1);
 		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
-		if (isdn != "") {
+		if (!isdn.isEmpty()) {
 			mPhoneNum.setText(isdn);
 		}
 		mName = (EditText)findViewById(R.id.editText2);
@@ -200,22 +252,73 @@ public class MyRegisterActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				String isdn = mPhoneNum.getText().toString();
+				String name = mName.getText().toString();
+				if (isdn.isEmpty() || name.isEmpty()) {
+					return;
+				}
 				String serviceURI = getResources().getString(R.string.register_uri);
 				InputStream in = getResources().openRawResource(R.raw.register);
 //				String sn = Build.SERIAL;
 				String imei = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 				String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
-				String isdn = mPhoneNum.getText().toString();
-				String name = mName.getText().toString();
 				String registerXml = String.format(
 					MyConvert.inputStream2String(in),
 					imei, imsi, isdn, name, "", "");
-				AsyncTask<String, Integer, Integer> task =
-					new MyTask().execute(serviceURI, registerXml);
+				mTask = (MyRegTask)new MyRegTask().execute(serviceURI, registerXml);
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						int i;
+
+						for (i = 0; i < 10; ++i) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							if (mTask.getStatus() == AsyncTask.Status.FINISHED) {
+								break;
+							}
+						}
+						if (i >= 10) {
+							mTask.cancel(true);
+						}
+						
+					}
+					
+				}).start();
 			}
 	    	
 	    });
 
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if (mTask != null) {
+			if (mTask.getStatus() != AsyncTask.Status.FINISHED) {
+				mTask.mProgressDlg = ProgressDialog.show(MyRegisterActivity.this,
+					"Registeration", "Please wait while registering");
+			}
+		}
+
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		if (mTask != null) {
+			mTask.mProgressDlg.dismiss();
+		}
+		
+		super.onStop();
 	}
 
 }

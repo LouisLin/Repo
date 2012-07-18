@@ -32,25 +32,38 @@ public class MyLauncherActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 
-		boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
-		if (!registered) {
-			MyIntent.startActivity(MyRegisterActivity.class);
-		} else {
 //	    getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		setContentView(R.layout.main);
 
-		Button query = (Button)findViewById(R.id.button1);
-	    query.setOnClickListener(new OnClickListener() {
+	    boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Bundle bundle = new Bundle();
-				bundle.putBoolean("polling", true);
-				MyIntent.startService(MyBackgroundService.class, bundle);
-			}
-	    	
-	    });
+		Button query = (Button)findViewById(R.id.button1);
+		Button register = (Button)findViewById(R.id.button5);
+		if (registered) {
+		    query.setOnClickListener(new OnClickListener() {
+	
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("polling", true);
+					MyIntent.startService(MyBackgroundService.class, bundle);
+				}
+		    	
+		    });
+		    register.setVisibility(View.GONE);
+		} else {
+			query.setVisibility(View.GONE);
+			register.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					MyIntent.startActivity(MyRegisterActivity.class);
+				}
+				
+			});
+		}
 		Button unregister = (Button)findViewById(R.id.button2);
 		unregister.setOnClickListener(new OnClickListener() {
 
@@ -86,7 +99,7 @@ public class MyLauncherActivity extends Activity {
 			}
 	    	
 	    });
-		}
+
 	}
 
 	@Override
