@@ -32,6 +32,8 @@ import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
+import com.my.app.test1.lib.MyWait;
+import com.my.app.test1.lib.MyWaitInterface;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -103,6 +105,13 @@ public class MyBackgroundService extends Service {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			/*
 			URI uri = null;
 			try {
@@ -259,7 +268,7 @@ public class MyBackgroundService extends Service {
 		@Override
 		protected void onCancelled(Integer result) {
 			// TODO Auto-generated method stub
-			MyToast.show("AsyncTask:onCancelled()");
+			MyToast.show("Timeout, application will try later.");
 
 			MyBackgroundService.this.stopSelfResult(mStartId);
 			super.onCancelled(result);
@@ -300,31 +309,23 @@ public class MyBackgroundService extends Service {
 		String queryXml = String.format(MyConvert.inputStream2String(in), imei, imsi, isdn);
 
 		mTask = (MyQueryTask)new MyQueryTask().execute(serviceURI, queryXml);
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				int i;
-
-				for (i = 0; i < 10; ++i) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (mTask.getStatus() == AsyncTask.Status.FINISHED) {
-						break;
-					}
+		MyWait.wait(10,
+			new MyWaitInterface.OnCompareListener() {
+				
+				@Override
+				public boolean isDone() {
+					// TODO Auto-generated method stub
+					return (mTask.getStatus() == AsyncTask.Status.FINISHED);
 				}
-				if (i >= 10) {
+			},
+			new MyWaitInterface.OnTimeoutListener() {
+				
+				@Override
+				public void cancel() {
+					// TODO Auto-generated method stub
 					mTask.cancel(true);
 				}
-				
-			}
-			
-		}).start();
+			});
 
 		return START_NOT_STICKY;
 	}

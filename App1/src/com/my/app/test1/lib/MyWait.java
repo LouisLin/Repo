@@ -1,8 +1,13 @@
 package com.my.app.test1.lib;
 
+import com.my.app.test1.lib.MyWaitInterface.OnCompareListener;
+import com.my.app.test1.lib.MyWaitInterface.OnTimeoutListener;
+
 public class MyWait {
 
-	public static void wait(final int sec) {
+	public static void wait(final int sec,
+		final OnCompareListener compareListener,
+		final OnTimeoutListener timeoutListener) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -16,12 +21,20 @@ public class MyWait {
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						if (timeoutListener != null) {
+							timeoutListener.cancel();
+						}
+						return;
 					}
+					if (compareListener != null && compareListener.isDone()) {
 //					if (mTask.getStatus() == AsyncTask.Status.FINISHED) {
-//						break;
-//					}
+						break;
+					}
 				}
 				if (i >= sec) {
+					if (timeoutListener != null) {
+						timeoutListener.cancel();
+					}
 //					mTask.cancel(true);
 				}
 				

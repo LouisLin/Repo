@@ -121,12 +121,20 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Refresh" />
-
-    <Button
-        android:id="@+id/button11"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:text="Stop Alarm" />
+        android:layout_marginTop="250dp"
+        android:baselineAligned="true"
+        android:gravity="center_horizontal" >
+
+        <Button
+            android:id="@+id/button11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Alarm" />
+
+    </LinearLayout>
     
 </LinearLayout>

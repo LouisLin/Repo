@@ -28,6 +28,8 @@ import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
 import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
+import com.my.app.test1.lib.MyWait;
+import com.my.app.test1.lib.MyWaitInterface;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,8 +44,11 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 /**
  * @author Louis
@@ -101,7 +106,7 @@ public class MyRegisterActivity extends Activity {
 				mException = e;
 			}
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(mTEST_regTime);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,7 +225,11 @@ public class MyRegisterActivity extends Activity {
 			// TODO Auto-generated method stub
 			mProgressDlg.dismiss();
 
-			MyToast.show("AsyncTask:onCancelled()");
+			AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+					.setTitle("Timeout")
+					.setMessage("Please try again")
+					.create();
+			MyAlertDialog.alert(alert);
 
 			super.onCancelled(result);
 		}
@@ -230,6 +239,8 @@ public class MyRegisterActivity extends Activity {
 	private EditText mPhoneNum;
 	private EditText mName;
 	static private MyRegTask mTask = null;
+	
+	private long mTEST_regTime = 3000;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -266,35 +277,37 @@ public class MyRegisterActivity extends Activity {
 					MyConvert.inputStream2String(in),
 					imei, imsi, isdn, name, "", "");
 				mTask = (MyRegTask)new MyRegTask().execute(serviceURI, registerXml);
-				new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						int i;
-
-						for (i = 0; i < 10; ++i) {
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							if (mTask.getStatus() == AsyncTask.Status.FINISHED) {
-								break;
-							}
+				MyWait.wait(10,
+					new MyWaitInterface.OnCompareListener() {
+					
+						@Override
+						public boolean isDone() {
+							// TODO Auto-generated method stub
+							return (mTask.getStatus() == AsyncTask.Status.FINISHED);
 						}
-						if (i >= 10) {
+					},
+					new MyWaitInterface.OnTimeoutListener() {
+						
+						@Override
+						public void cancel() {
+							// TODO Auto-generated method stub
 							mTask.cancel(true);
 						}
-						
-					}
-					
-				}).start();
+					});
 			}
 	    	
 	    });
 
+		ToggleButton regTime = (ToggleButton)findViewById(R.id.toggleButton1);
+		regTime.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 
 	@Override
