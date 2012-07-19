@@ -63,41 +63,41 @@ public class MyNotifiedActivity extends Activity {
 	    	
 	    });
 
-//	    if (!getIntent().getBooleanExtra("polling", false)) {
-	    	MyNotification.cancel(MyApp.ID);
-//	    }
+	    MyApplication app = ((MyApplication)getApplicationContext());
+	    if (!app.isQueryStatusUpdated()) {
+	    	finish();
+	    }
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-	    if (getIntent().getBooleanExtra("polling", false)) {
+		super.onResume();
+
+//	    if (!getIntent().getBooleanExtra("polling", false)) {
+	    	MyNotification.cancel(MyApp.ID);
+//	    }
+
+		if (getIntent().getBooleanExtra("polling", false)) {
 	    	getActionBar().setTitle("QueryStatus");
 	    } else {
 	    	getActionBar().setTitle("Notification");
 	    }
 
 	    MyApplication app = ((MyApplication)getApplicationContext());
-		TextView hospital = (TextView)findViewById(R.id.textView3);
-		hospital.setText(app.getQueryHospital(0));
-		TextView department = (TextView)findViewById(R.id.textView4);
-		department.setText(app.getQueryDepartment(0));
-		TextView regDate = (TextView)findViewById(R.id.textView5);
 		try {
+			TextView hospital = (TextView)findViewById(R.id.textView3);
+			hospital.setText(app.getQueryHospital(0));
+			TextView department = (TextView)findViewById(R.id.textView4);
+			department.setText(app.getQueryDepartment(0));
+			TextView regDate = (TextView)findViewById(R.id.textView5);
 			regDate.setText(app.getDateFormat().format(app.getQueryRegDate(0)));
-		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		TextView diagDate = (TextView)findViewById(R.id.textView6);
-		try {
+			TextView diagDate = (TextView)findViewById(R.id.textView6);
 			diagDate.setText(app.getDateFormat().format(app.getQueryDiagDate(0)));
+			TextView yourNum = (TextView)findViewById(R.id.textView1);
+			yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
+			TextView now = (TextView)findViewById(R.id.textView2);
+			now.setText(String.valueOf(app.getQueryDiagNo(0)));
 		} catch (IndexOutOfBoundsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -108,16 +108,10 @@ public class MyNotifiedActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		TextView yourNum = (TextView)findViewById(R.id.textView1);
-		yourNum.setText(String.valueOf(app.getQueryRegNo(0)));
-		TextView now = (TextView)findViewById(R.id.textView2);
-		now.setText(String.valueOf(app.getQueryDiagNo(0)));
-
-		super.onResume();
 	}
 
 	@Override
-	protected void onDestroy() {
+	protected void onPause() {
 		// TODO Auto-generated method stub
 //	    if (!getIntent().getBooleanExtra("polling", false)) {
 			MyApplication app = ((MyApplication)getApplicationContext());
@@ -125,13 +119,15 @@ public class MyNotifiedActivity extends Activity {
 			Notification notification = MyNotification.getDefaultNotificationBuilder()
 				.setDefaults(0)
 				.setTicker(null)
+				.setContentTitle("XXX Hospital")
+				.setContentText("Progress now")
 				.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 				.getNotification();
 			MyNotification.notify(MyApp.ID, notification);
 //	    }
 	    
-		super.onDestroy();
+		super.onPause();
 	}
 
 	@Override

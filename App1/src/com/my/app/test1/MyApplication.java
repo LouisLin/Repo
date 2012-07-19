@@ -85,9 +85,11 @@ public class MyApplication extends Application {
 	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	private String[] mRegTags = null;
 	private Bundle mRegisterStatus = new Bundle();
+	private boolean mRegisterStatusUpdated = false;
 	private String[] mTags = null;
 	private String[] mRecTags = null;
 	private Bundle mQueryStatus = new Bundle();
+	private boolean mQueryStatusUpdated = false;
 	private	boolean mHadNotified = false;
 	private AlertDialog mGlobalAlert = null;
 	
@@ -257,6 +259,11 @@ public class MyApplication extends Application {
 				}
 			}
 		}
+		mRegisterStatusUpdated = true;
+	}
+
+	public boolean isRegisterStatusUpdated() {
+		return mRegisterStatusUpdated;
 	}
 
 	public int getRegisterError() {
@@ -354,6 +361,11 @@ public class MyApplication extends Application {
 			}
 		}
 		++mTEST_UpdateQueryCount;
+		mQueryStatusUpdated = true;
+	}
+	
+	public boolean isQueryStatusUpdated() {
+		return mQueryStatusUpdated;
 	}
 
 	public int getQueryError() {

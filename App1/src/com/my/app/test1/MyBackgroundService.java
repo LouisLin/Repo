@@ -177,6 +177,9 @@ public class MyBackgroundService extends Service {
 				} else if (MyBackgroundService.this.isNeededToNotify()){
 					final MyApplication app = ((MyApplication)getApplicationContext());
 
+					// Cancel previous notification
+					MyNotification.cancel(MyApp.ID);
+					
 					SharedPreferences preferences = MyPreferences.get();
 					boolean sound = preferences.getBoolean("sound", false);
 					boolean vibrate = preferences.getBoolean("vibrate", false);
@@ -233,6 +236,8 @@ public class MyBackgroundService extends Service {
 								app.setGlobalAlert(null);
 								Notification notification = MyNotification.getDefaultNotificationBuilder()
 									.setTicker(null)
+									.setContentTitle("XXX Hospital")
+									.setContentText("Progress now")
 									.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 									.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 									.getNotification();
@@ -281,7 +286,7 @@ public class MyBackgroundService extends Service {
 		mIntent = intent;
 		mFlags = flags;
 		mStartId = startId;
-//		MyToast.show("flags=" + flags + ", startId=" + startId + ", intent=" + intent.getBooleanExtra("polling", false));
+//MyToast.show("flags=" + flags + ", startId=" + startId + ", intent=" + intent.getBooleanExtra("polling", false));
 
 		String serviceURI = getResources().getString(R.string.query_uri);
 		InputStream in = getResources().openRawResource(R.raw.query);
@@ -362,7 +367,7 @@ public class MyBackgroundService extends Service {
 		
 		int numDiag = app.getQueryDiagNo(0);
 		int numDiff = app.getQueryRegNo(0) - numDiag;
-		MyToast.show("dateDiff=" + dateDiff + ", numDiff=" + numDiff);
+//MyToast.show("dateDiff=" + dateDiff + ", numDiff=" + numDiff);
 		app.adjustAlarmInterval(dateDiff, numDiff);
 
 		if (dateDiff < 0) {

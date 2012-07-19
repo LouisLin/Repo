@@ -20,7 +20,7 @@ public class MyAlarm {
 	}
 
 	public static void setInexactRepeating(long delay, long interval, PendingIntent intent) {
-		MyToast.showLong("delay=" + delay + ", interval=" + interval);
+//MyToast.showLong("delay=" + delay + ", interval=" + interval);
 		AlarmManager manager = (AlarmManager)MyApp.getContext().getSystemService(Context.ALARM_SERVICE);
 		manager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
 			System.currentTimeMillis() + delay, interval, intent);

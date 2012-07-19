@@ -33,7 +33,8 @@ import android.util.Log;
  *
  */
 public class MyApp {
-	final private static java.util.UUID mUUID = java.util.UUID.randomUUID();
+//	final private static java.util.UUID mUUID = java.util.UUID.randomUUID();
+	final private static java.util.UUID mUUID = java.util.UUID.fromString("996572ea-f63e-418b-899b-e53f07cd1518");
 	final public static String UUID = mUUID.toString();
 	final public static int ID = mUUID.hashCode();
 
