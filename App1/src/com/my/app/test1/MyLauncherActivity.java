@@ -3,7 +3,19 @@
  */
 package com.my.app.test1;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyAlertDialog;
@@ -89,6 +101,8 @@ public class MyLauncherActivity extends Activity {
 									bundle.putBoolean("polling", true);
 									MyIntent.startSingleActivity(MyNotifiedActivity.class, bundle);
 								} else {
+									// TODO: Print exception message
+
 									AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
 										.setMessage("Please try later")
 										.create();

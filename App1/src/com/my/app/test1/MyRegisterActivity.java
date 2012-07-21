@@ -232,6 +232,8 @@ public class MyRegisterActivity extends Activity {
 								MyApplication app = ((MyApplication)getApplicationContext());
 								app.startAlarm(MyApplication.STARTUP_DELAY);
 							} else {
+								// TODO: Print exception message
+
 								AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
 									.setMessage("Please try later")
 									.create();

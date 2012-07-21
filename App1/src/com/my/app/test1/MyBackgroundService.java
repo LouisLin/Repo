@@ -96,7 +96,6 @@ public class MyBackgroundService extends Service {
 				@Override
 				public void onPreExecute() {
 					// TODO Auto-generated method stub
-					
 				}
 				
 				@Override

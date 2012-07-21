@@ -1,10 +1,13 @@
 package com.my.app.test1;
 
+import com.my.app.test1.lib.MyPreferences;
 import com.my.app.test1.lib.MyToast;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
@@ -18,8 +21,22 @@ public class MyTestPreferenceActivity extends PreferenceActivity implements OnSh
 	
 	    // TODO Auto-generated method stub
 	    addPreferencesFromResource(R.xml.settings_test);
-	    PreferenceManager.getDefaultSharedPreferences(this)
-	    	.registerOnSharedPreferenceChangeListener(this);
+    	PreferenceManager.getDefaultSharedPreferences(this)
+    		.registerOnSharedPreferenceChangeListener(this);
+
+    	String uri = MyPreferences.getString(
+    	   	MyApplication.TEST_PREF_REGISTER_URI,
+    	   	getResources().getString(R.string.register_uri));
+        EditTextPreference etPref = (EditTextPreference)getPreferenceScreen().getPreference(4);
+    	    etPref.setSummary(uri);
+    	    etPref.setText(uri);
+
+    	uri = MyPreferences.getString(
+	    	MyApplication.TEST_PREF_QUERY_URI,
+	    	getResources().getString(R.string.query_uri));
+    	etPref = (EditTextPreference)getPreferenceScreen().getPreference(7);
+	    etPref.setSummary(uri);
+	    etPref.setText(uri);
 	}
 
 	@Override
@@ -31,6 +48,7 @@ public class MyTestPreferenceActivity extends PreferenceActivity implements OnSh
 		super.onDestroy();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onSharedPreferenceChanged(
 		SharedPreferences sharedPreferences, String key) {
@@ -50,6 +68,18 @@ public class MyTestPreferenceActivity extends PreferenceActivity implements OnSh
 					MyToast.show("Alarm stopped!");
 				}
 			}
+		} else if (key.compareTo(MyApplication.TEST_PREF_REGISTER_URI) == 0) {
+	    	String uri = MyPreferences.getString(
+	        	MyApplication.TEST_PREF_REGISTER_URI,
+	        	getResources().getString(R.string.register_uri));
+            ((EditTextPreference)getPreferenceScreen().getPreference(4))
+	        	.setSummary(uri);
+		} else if (key.compareTo(MyApplication.TEST_PREF_QUERY_URI) == 0) {
+	    	String uri = MyPreferences.getString(
+		        	MyApplication.TEST_PREF_QUERY_URI,
+		        	getResources().getString(R.string.query_uri));
+            ((EditTextPreference)getPreferenceScreen().getPreference(7))
+	        	.setSummary(uri);
 		}
 
 	}
