@@ -27,6 +27,7 @@
         </receiver><receiver android:name=".MyAlarmReceiver"></receiver><service android:name=".MyBackgroundService">
         </service><activity android:name=".MyNotifiedActivity">
         </activity>
+        <activity android:name=".MyTestPreferenceActivity"></activity>
         
         
         

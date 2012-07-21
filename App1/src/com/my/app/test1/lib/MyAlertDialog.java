@@ -18,7 +18,7 @@ public class MyAlertDialog {
 //			.setIcon(R.drawable.ic_launcher)
 //			.setIconAttribute(android.R.attr.alertDialogIcon)
 			.setTitle(MyApp.getName())
-			.setMessage("Message...")
+//			.setMessage(null)
 //			.setView(null)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				

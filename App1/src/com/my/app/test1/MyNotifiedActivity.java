@@ -5,18 +5,25 @@ package com.my.app.test1;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 import com.my.app.test1.lib.MyAlarm;
+import com.my.app.test1.lib.MyAlertDialog;
 import com.my.app.test1.lib.MyApp;
 import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyNotification;
 import com.my.app.test1.lib.MyPendingIntent;
+import com.my.app.test1.lib.MyTask;
+import com.my.app.test1.lib.MyTask.OnTaskListener;
 import com.my.app.test1.lib.MyToast;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +35,9 @@ import android.widget.TextView;
  *
  */
 public class MyNotifiedActivity extends Activity {
+
+	private MyTask mTask;
+	private ProgressDialog mProgressDlg;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -43,21 +53,69 @@ public class MyNotifiedActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Bundle bundle = new Bundle();
-				bundle.putBoolean("polling", true);
-				MyIntent.startService(MyBackgroundService.class, bundle);
+				mTask = new MyQueryTask(MyNotifiedActivity.this,
+					new OnTaskListener() {
+
+						@Override
+						public void onPreExecute() {
+							// TODO Auto-generated method stub
+							mProgressDlg = ProgressDialog.show(MyNotifiedActivity.this, null, "Querying...");
+						}
+
+						@Override
+						public void onProgressUpdate(Integer value) {
+							// TODO Auto-generated method stub
+							
+						}
+
+						@Override
+						public void onPostExecute(Integer result) {
+							// TODO Auto-generated method stub
+							mProgressDlg.dismiss();								
+
+							if (result == 0) {
+								Bundle bundle = new Bundle();
+								bundle.putBoolean("polling", true);
+								MyIntent.startSingleActivity(MyNotifiedActivity.class, bundle);
+							} else {
+								AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+									.setMessage("Please try later")
+									.create();
+								switch (result) {
+								case MyQueryTask.EXECUTE_FAILED:
+									alert.setTitle("Failed");
+									break;
+								}
+								MyAlertDialog.alert(alert);
+							}
+						}
+
+						@Override
+						public void onCancelled(Integer result) {
+							// TODO Auto-generated method stub
+							mProgressDlg.dismiss();
+
+							AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+								.setMessage("Timeout\nPlease try later")
+								.create();
+							MyAlertDialog.alert(alert);
+						}
+					
+					});
+				mTask.execute();
+				mTask.getResult(10, TimeUnit.SECONDS, null);
 			}
 	    	
 	    });
 
-		Button stopAlarm = (Button)findViewById(R.id.button11);
-	    stopAlarm.setOnClickListener(new OnClickListener() {
+		Button mainPage = (Button)findViewById(R.id.button1);
+		mainPage.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				((MyApplication)MyNotifiedActivity.this.getApplicationContext())
-					.stopAlarm();
+				MyNotifiedActivity.this.finish();
+				MyIntent.startSingleActivity(MyLauncherActivity.class);
 
 			}
 	    	
@@ -73,6 +131,13 @@ public class MyNotifiedActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+
+		if (mTask != null) {
+			if (mTask.getStatus() != AsyncTask.Status.FINISHED) {
+				mProgressDlg = ProgressDialog.show(MyNotifiedActivity.this,
+					null, "Registering...");
+			}
+		}
 
 //	    if (!getIntent().getBooleanExtra("polling", false)) {
 	    	MyNotification.cancel(MyApp.ID);
@@ -113,19 +178,23 @@ public class MyNotifiedActivity extends Activity {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
-//	    if (!getIntent().getBooleanExtra("polling", false)) {
+		if (mTask != null) {
+			mProgressDlg.dismiss();
+		}
+
+	    if (!getIntent().getBooleanExtra("polling", false)) {
 			MyApplication app = ((MyApplication)getApplicationContext());
 	
 			Notification notification = MyNotification.getDefaultNotificationBuilder()
 				.setDefaults(0)
 				.setTicker(null)
-				.setContentTitle("XXX Hospital")
+				.setContentTitle("XYZ Hospital")
 				.setContentText("Progress now")
 				.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 				.getNotification();
 			MyNotification.notify(MyApp.ID, notification);
-//	    }
+	    }
 	    
 		super.onPause();
 	}

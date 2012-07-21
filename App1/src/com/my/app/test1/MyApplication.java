@@ -5,6 +5,8 @@ package com.my.app.test1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyAlarm;
 import com.my.app.test1.lib.MyApp;
+import com.my.app.test1.lib.MyConvert;
 import com.my.app.test1.lib.MyIntent;
 import com.my.app.test1.lib.MyDate;
 import com.my.app.test1.lib.MyPendingIntent;
@@ -31,12 +34,14 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ComponentCallbacks;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 /**
@@ -60,6 +65,15 @@ public class MyApplication extends Application {
 	
 	final public static String PREF_REGISTERED = "registered";
 	final public static String PREF_ISDN = "isdn";
+	
+	final public static String TEST_PREF_REGISTERED = "registered";
+	final public static String TEST_PREF_ALARM_ENABLE = "alarm_enable";
+	final public static String TEST_PREF_LOCAL_REGISTER = "local_register";
+	final public static String TEST_PREF_REGISTER_TIMEOUT = "register_timeout";
+	final public static String TEST_PREF_REGISTER_URI = "register_uri";
+	final public static String TEST_PREF_LOCAL_QUERY = "local_query";
+	final public static String TEST_PREF_QUERY_TIMEOUT = "query_timeout";
+	final public static String TEST_PREF_QUERY_URI = "query_uri";
 
 	private static enum RegisterTags {
 		ERROR
@@ -82,17 +96,19 @@ public class MyApplication extends Application {
 
 	private long mAlarmInterval = DEF_ALARM_INTERVAL;
 	private boolean mAlarmSet = false;
+	private	boolean mHadNotified = false;
+	private AlertDialog mGlobalAlert = null;
 	private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
 	private String[] mRegTags = null;
 	private Bundle mRegisterStatus = new Bundle();
 	private boolean mRegisterStatusUpdated = false;
+
 	private String[] mTags = null;
 	private String[] mRecTags = null;
 	private Bundle mQueryStatus = new Bundle();
 	private boolean mQueryStatusUpdated = false;
-	private	boolean mHadNotified = false;
-	private AlertDialog mGlobalAlert = null;
-	
+
 	private int mTEST_UpdateQueryCount = 0;
 
 	public MyApplication() {
@@ -203,6 +219,7 @@ public class MyApplication extends Application {
 
 	public void setAlarmSet(boolean set) {
 		mAlarmSet = set;
+		MyPreferences.setBoolean(TEST_PREF_ALARM_ENABLE, mAlarmSet);
 	}
 
 	public void startAlarm(long delay) {
@@ -233,8 +250,54 @@ public class MyApplication extends Application {
 		}
 	}
 
+	public boolean hadNotified() {
+		return mHadNotified;
+	}
+
+
+	public void setHadNotified(boolean notified) {
+		mHadNotified = notified;
+	}
+
+
+	public AlertDialog getGlobalAlert() {
+		return mGlobalAlert;
+	}
+
+
+	public void setGlobalAlert(AlertDialog alert) {
+		mGlobalAlert = alert;
+	}
+
+
 	public SimpleDateFormat getDateFormat() {
 		return mDateFormat;
+	}
+
+	public URI getRegisterURI() {
+		String registerURI = MyPreferences.getString(TEST_PREF_REGISTER_URI,
+			getResources().getString(R.string.register_uri));
+		URI uri = null;
+		try {
+			uri = new URI(registerURI);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return uri;
+	}
+
+	public String getRegisterXml(String isdn, String name) {
+		InputStream in = getResources().openRawResource(R.raw.register);
+//		String sn = Build.SERIAL;
+		String imei = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
+		String registerXml = String.format(
+			MyConvert.inputStream2String(in),
+			imei, imsi, isdn, name, "", "");
+		
+		return registerXml;
 	}
 
 	public void updateRegisterStatus(InputStream registerStatus) throws ParserConfigurationException, SAXException, IOException {
@@ -270,6 +333,34 @@ public class MyApplication extends Application {
 		return mRegisterStatus.getInt(mRegTags[RegisterTags.ERROR.ordinal()]);
 	}
 	
+	public URI getQueryURI() {
+		String queryURI = MyPreferences.getString(TEST_PREF_QUERY_URI,
+				getResources().getString(R.string.query_uri));
+		URI uri = null;
+		try {
+			uri = new URI(queryURI);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return uri;
+	}
+
+	public String getQueryXml() {
+		InputStream in = getResources().openRawResource(R.raw.query);
+//		String sn = Build.SERIAL;
+		String imei = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
+		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+		if (isdn.isEmpty()) {
+			isdn = MyPreferences.getString(MyApplication.PREF_ISDN, "");
+		}
+		String queryXml = String.format(MyConvert.inputStream2String(in), imei, imsi, isdn);
+		
+		return queryXml;
+	}
+
 	public void updateQueryStatus(InputStream queryStatus) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();   
@@ -441,25 +532,6 @@ public class MyApplication extends Application {
 			throw new IndexOutOfBoundsException();
 		}
 		return bundle.getInt(mRecTags[QueryRecTags.DIAG_NO.ordinal()]);
-	}
-
-	public boolean hadNotified() {
-		return mHadNotified;
-	}
-
-
-	public void setHadNotified(boolean notified) {
-		mHadNotified = notified;
-	}
-
-
-	public AlertDialog getGlobalAlert() {
-		return mGlobalAlert;
-	}
-
-
-	public void setGlobalAlert(AlertDialog alert) {
-		mGlobalAlert = alert;
 	}
 
 }

@@ -20,7 +20,6 @@ public class MyPreferenceActivity extends PreferenceActivity {
 	
 	    // TODO Auto-generated method stub
 	    addPreferencesFromResource(R.xml.settings_notify);
-	    getActionBar().setTitle("Settings");
 	}
 
 }

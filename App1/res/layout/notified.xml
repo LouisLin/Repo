@@ -114,26 +114,23 @@
             android:layout_column="0"
             android:layout_row="0" />
     </GridLayout>
-
-    <Button
-        android:id="@+id/button10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Refresh" />
-
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
-        android:baselineAligned="true"
         android:gravity="center_horizontal" >
-
+
         <Button
-            android:id="@+id/button11"
+            android:id="@+id/button10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stop Alarm" />
+            android:text="Refresh" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Main Page" />
 
     </LinearLayout>
     
