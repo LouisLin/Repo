@@ -165,6 +165,14 @@ public class MyBackgroundService extends Service {
 								public void onCancel(DialogInterface dialog) {
 									// TODO Auto-generated method stub
 									app.setGlobalAlert(null);
+									Notification notification = MyNotification.getDefaultNotification();
+									notification.defaults = 0;
+									notification.tickerText = null;
+									notification.setLatestEventInfo(MyApp.getContext(),
+										"XYZ Hospital", "Progress now",
+										MyPendingIntent.getActivity(MyNotifiedActivity.class));
+						// TODO		.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
+									/*
 									Notification notification = MyNotification.getDefaultNotificationBuilder()
 										.setTicker(null)
 										.setContentTitle("XYZ Hospital")
@@ -172,6 +180,7 @@ public class MyBackgroundService extends Service {
 										.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 										.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 										.getNotification();
+									*/
 									MyNotification.notify(MyApp.ID, notification);							
 								}
 							})

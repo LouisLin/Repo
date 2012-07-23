@@ -15,8 +15,16 @@ import android.content.Context;
  */
 public class MyNotification {
 
-	public static Notification.Builder getDefaultNotificationBuilder() {
+	public static Notification getDefaultNotification() {
 		Notification notify = new Notification();
+		notify.defaults = Notification.DEFAULT_ALL;
+		notify.icon = R.drawable.ic_launcher;
+		notify.tickerText = MyApp.getName();
+		notify.setLatestEventInfo(MyApp.getContext(), MyApp.getName(), "Description", null);
+		return notify;
+	}
+	/*
+	public static Notification.Builder getDefaultNotificationBuilder() {
 		return new Notification.Builder(MyApp.getContext())
 			.setDefaults(Notification.DEFAULT_ALL)
 			.setSmallIcon(R.drawable.ic_launcher)	// important
@@ -30,27 +38,42 @@ public class MyNotification {
 			.setAutoCancel(true)
 			;
 	}
+	*/
 	
 	public static Notification getSoundVibrateNotification() {
+		Notification notify = new Notification();
+		notify.defaults = Notification.DEFAULT_ALL;
+		return notify;
+		/*
 		return new Notification.Builder(MyApp.getContext())
 			.setDefaults(Notification.DEFAULT_ALL)
 //			.setOnlyAlertOnce(true)
 			.getNotification();
+		*/
 	}
 
 	public static Notification getSoundNotification() {
+		Notification notify = new Notification();
+		notify.defaults = Notification.DEFAULT_SOUND;
+		return notify;
+		/*
 		return new Notification.Builder(MyApp.getContext())
 			.setDefaults(Notification.DEFAULT_SOUND)
 //			.setOnlyAlertOnce(true)
 			.getNotification();
+		*/
 	}
 
 	public static Notification getVibrateNotification() {
 		Notification notify = new Notification();
+		notify.defaults = Notification.DEFAULT_VIBRATE;
+		return notify;
+		/*
 		return new Notification.Builder(MyApp.getContext())
 			.setDefaults(Notification.DEFAULT_VIBRATE)
 //			.setOnlyAlertOnce(true)
 			.getNotification();
+		*/
 	}
 
 	public static void notify(int id, Notification notification) {

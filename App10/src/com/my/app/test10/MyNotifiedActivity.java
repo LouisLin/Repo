@@ -185,6 +185,14 @@ public class MyNotifiedActivity extends Activity {
 	    if (!getIntent().getBooleanExtra("polling", false)) {
 			MyApplication app = ((MyApplication)getApplicationContext());
 	
+			Notification notification = MyNotification.getDefaultNotification();
+			notification.defaults = 0;
+			notification.tickerText = null;
+			notification.setLatestEventInfo(this,
+				"XYZ Hospital", "Progress now",
+				MyPendingIntent.getActivity(MyNotifiedActivity.class));
+// TODO		.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
+			/*
 			Notification notification = MyNotification.getDefaultNotificationBuilder()
 				.setDefaults(0)
 				.setTicker(null)
@@ -193,6 +201,7 @@ public class MyNotifiedActivity extends Activity {
 				.setContentInfo(app.getQueryDiagNo(0) + "/" + app.getQueryRegNo(0))
 				.setContentIntent(MyPendingIntent.getActivity(MyNotifiedActivity.class))
 				.getNotification();
+			*/
 			MyNotification.notify(MyApp.ID, notification);
 	    }
 	    

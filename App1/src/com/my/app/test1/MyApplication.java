@@ -68,6 +68,8 @@ public class MyApplication extends Application {
 	final public static String PREF_REGISTERED = "registered";
 	final public static String PREF_ISDN = "isdn";
 	
+	
+	
 	final public static String TEST_PREF_SHOW_SDK_INFO = "show_info";
 	final public static String TEST_PREF_REGISTERED = "registered";
 	final public static String TEST_PREF_ALARM_ENABLE = "alarm_enable";

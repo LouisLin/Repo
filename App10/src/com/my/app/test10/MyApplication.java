@@ -455,7 +455,6 @@ public class MyApplication extends Application {
 				case REG_REC:
 					for (int rec = 0; rec < nodes.getLength(); ++rec) {
 						value = nodes.item(rec).getAttributes().getNamedItem("index").getNodeValue();
-						Log.d("App10", "RegRec index=" + value);
 						mQueryStatus.putBundle(mTags[eTags.ordinal()] + value, new Bundle());
 					}
 					break;

@@ -75,7 +75,7 @@ public class MyRegisterActivity extends Activity {
 		
 		mPhoneNum = (EditText)findViewById(R.id.editText1);
 		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
-		if (!isdn.isEmpty()) {
+		if (isdn != null && !isdn.isEmpty()) {
 			mPhoneNum.setText(isdn);
 		}
 		mName = (EditText)findViewById(R.id.editText2);
