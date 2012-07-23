@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World!</string>
+    <string name="app_name">App10</string>
+    <string name="register_uri">http://192.168.1.2/Android/reg_status.xml</string><string-array name="register_status_tag">
+        <item>Error</item>
+    </string-array><string name="query_uri">http://192.168.1.2/Android/query_status.xml</string><string-array name="query_status_tag">
+        <item >Error</item>
+        <item >RecNum</item>
+        <item >RegRec</item>
+    </string-array><string-array name="query_status_rec_tag">
+        <item >Hospital</item>
+        <item >Department</item>
+        <item >RegDate</item>
+        <item >DiagDate</item>
+        <item >RegNo</item>
+        <item >DiagNo</item>
+        <item >EstTime</item>
+    </string-array>
+    
+    
+    
+    
+
+</resources>
