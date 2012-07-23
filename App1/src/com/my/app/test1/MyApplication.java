@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.my.app.test1.lib.MyAlarm;
+import com.my.app.test1.lib.MyAlertDialog;
 import com.my.app.test1.lib.MyApp;
 import com.my.app.test1.lib.MyConvert;
 import com.my.app.test1.lib.MyIntent;
@@ -39,6 +40,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
@@ -66,6 +68,7 @@ public class MyApplication extends Application {
 	final public static String PREF_REGISTERED = "registered";
 	final public static String PREF_ISDN = "isdn";
 	
+	final public static String TEST_PREF_SHOW_SDK_INFO = "show_info";
 	final public static String TEST_PREF_REGISTERED = "registered";
 	final public static String TEST_PREF_ALARM_ENABLE = "alarm_enable";
 	final public static String TEST_PREF_LOCAL_REGISTER = "local_register";
@@ -126,10 +129,63 @@ public class MyApplication extends Application {
 		super.onConfigurationChanged(newConfig);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 //		MyToast.show("onCreate()");
+		if (false/*MyPreferences.getBoolean(MyApplication.TEST_PREF_SHOW_SDK_INFO, false)*/) {
+			AlertDialog alert = MyAlertDialog.getNonActionsAlertDialogBuilder()
+				.setMessage("Board=" + Build.BOARD
+					+ "\nBootloader=" + Build.BOOTLOADER
+					+ "\nBrand=" + Build.BRAND
+					+ "\nDevice=" + Build.DEVICE
+					+ "\nDisplay=" + Build.DISPLAY
+					+ "\nFingerPrint=" + Build.FINGERPRINT
+					+ "\nHardware=" + Build.HARDWARE
+					+ "\nId=" + Build.ID
+					+ "\nManufacturer=" + Build.MANUFACTURER
+					+ "\nModel=" + Build.MODEL
+					+ "\nProduct=" + Build.PRODUCT
+					+ "\nRadio=" + Build.RADIO
+					+ "\nSerial=" + Build.SERIAL
+					+ "\nTags=" + Build.TAGS
+					+ "\nTime=" + Build.TIME
+					+ "\nType=" + Build.TYPE
+					+ "\nUser=" + Build.USER
+					+ "\nCodeName=" + Build.VERSION.CODENAME
+					+ "\nIncremental=" + Build.VERSION.INCREMENTAL
+					+ "\nRelease=" + Build.VERSION.RELEASE
+					+ "\nSDK=" + Build.VERSION.SDK
+					+ "\nSDK_INT=" + Build.VERSION.SDK_INT)
+				.create();
+			MyAlertDialog.alert(alert);
+/*
+			MyToast.showLong("Board=" + Build.BOARD
+				+ "\nBootloader=" + Build.BOOTLOADER
+				+ "\nBrand=" + Build.BRAND
+				+ "\nDevice=" + Build.DEVICE
+				+ "\nDisplay=" + Build.DISPLAY
+				+ "\nFingerPrint=" + Build.FINGERPRINT
+				+ "\nHardware=" + Build.HARDWARE
+				+ "\nId=" + Build.ID
+				+ "\nManufacturer=" + Build.MANUFACTURER
+				+ "\nModel=" + Build.MODEL
+				+ "\nProduct=" + Build.PRODUCT
+				+ "\nRadio=" + Build.RADIO
+				+ "\nSerial=" + Build.SERIAL
+				+ "\nTags=" + Build.TAGS
+				+ "\nTime=" + Build.TIME
+				+ "\nType=" + Build.TYPE
+				+ "\nUser=" + Build.USER
+				+ "\nCodeName=" + Build.VERSION.CODENAME
+				+ "\nIncremental=" + Build.VERSION.INCREMENTAL
+				+ "\nRelease=" + Build.VERSION.RELEASE
+				+ "\nSDK=" + Build.VERSION.SDK
+				+ "\nSDK_INT=" + Build.VERSION.SDK_INT
+				);
+*/
+		}
 
 		registerActivityLifecycleCallbacks(MyApp.getActivityLifecycleCallbacks());
 		registerComponentCallbacks(MyApp.getComponentCallbacks());
@@ -137,7 +193,7 @@ public class MyApplication extends Application {
 		mTags = getResources().getStringArray(R.array.query_status_tag);
 		mRecTags = getResources().getStringArray(R.array.query_status_rec_tag);
 		
-		boolean registered = MyPreferences.getBoolean(PREF_REGISTERED, false);
+		boolean registered = MyPreferences.getBoolean(MyApplication.PREF_REGISTERED, false);
 		if (!registered) {
 			mRegTags = getResources().getStringArray(R.array.register_status_tag);
 		} else {
@@ -219,7 +275,7 @@ public class MyApplication extends Application {
 
 	public void setAlarmSet(boolean set) {
 		mAlarmSet = set;
-		MyPreferences.setBoolean(TEST_PREF_ALARM_ENABLE, mAlarmSet);
+		MyPreferences.setBoolean(MyApplication.TEST_PREF_ALARM_ENABLE, mAlarmSet);
 	}
 
 	public void startAlarm(long delay) {
@@ -275,7 +331,7 @@ public class MyApplication extends Application {
 	}
 
 	public URI getRegisterURI() {
-		String registerURI = MyPreferences.getString(TEST_PREF_REGISTER_URI,
+		String registerURI = MyPreferences.getString(MyApplication.TEST_PREF_REGISTER_URI,
 			getResources().getString(R.string.register_uri));
 		URI uri = null;
 		try {
@@ -334,7 +390,7 @@ public class MyApplication extends Application {
 	}
 	
 	public URI getQueryURI() {
-		String queryURI = MyPreferences.getString(TEST_PREF_QUERY_URI,
+		String queryURI = MyPreferences.getString(MyApplication.TEST_PREF_QUERY_URI,
 				getResources().getString(R.string.query_uri));
 		URI uri = null;
 		try {
@@ -353,7 +409,7 @@ public class MyApplication extends Application {
 		String imei = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		String imsi = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getSubscriberId();
 		String isdn = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
-		if (isdn.isEmpty()) {
+		if (isdn == null || isdn.isEmpty()) {
 			isdn = MyPreferences.getString(MyApplication.PREF_ISDN, "");
 		}
 		String queryXml = String.format(MyConvert.inputStream2String(in), imei, imsi, isdn);
@@ -397,7 +453,6 @@ public class MyApplication extends Application {
 				case REG_REC:
 					for (int rec = 0; rec < nodes.getLength(); ++rec) {
 						value = nodes.item(rec).getAttributes().getNamedItem("index").getNodeValue();
-						Log.d("App1", "RegRec index=" + value);
 						mQueryStatus.putBundle(mTags[eTags.ordinal()] + value, new Bundle());
 					}
 					break;
