@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test1;
+package com.my.app.test15;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,20 +20,21 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.xml.sax.SAXException;
 
-import com.my.app.test1.lib.MyAlertDialog;
-import com.my.app.test1.lib.MyApp;
-import com.my.app.test1.lib.MyConvert;
-import com.my.app.test1.lib.MyIntent;
-import com.my.app.test1.lib.MyLayoutInflater;
-import com.my.app.test1.lib.MyNotification;
-import com.my.app.test1.lib.MyPendingIntent;
-import com.my.app.test1.lib.MyPreferences;
-import com.my.app.test1.lib.MyTask;
-import com.my.app.test1.lib.MyTask.DoInBackgroundCallback;
-import com.my.app.test1.lib.MyTask.OnTaskListener;
-import com.my.app.test1.lib.MyToast;
-import com.my.app.test1.lib.MyWait;
-import com.my.app.test1.lib.MyWaitInterface;
+import com.my.app.test15.R;
+import com.my.app.test15.lib.MyAlertDialog;
+import com.my.app.test15.lib.MyApp;
+import com.my.app.test15.lib.MyConvert;
+import com.my.app.test15.lib.MyIntent;
+import com.my.app.test15.lib.MyLayoutInflater;
+import com.my.app.test15.lib.MyNotification;
+import com.my.app.test15.lib.MyPendingIntent;
+import com.my.app.test15.lib.MyPreferences;
+import com.my.app.test15.lib.MyTask;
+import com.my.app.test15.lib.MyToast;
+import com.my.app.test15.lib.MyWait;
+import com.my.app.test15.lib.MyWaitInterface;
+import com.my.app.test15.lib.MyTask.DoInBackgroundCallback;
+import com.my.app.test15.lib.MyTask.OnTaskListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;

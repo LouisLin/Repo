@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World!</string>
-    <string name="app_name">App1</string>
+    <string name="app_name">App15</string>
     <string name="register_uri">http://192.168.1.2/Android/reg_status.xml</string><string-array name="register_status_tag">
         <item>Error</item>
     </string-array><string name="query_uri">http://192.168.1.2/Android/query_status.xml</string><string-array name="query_status_tag">

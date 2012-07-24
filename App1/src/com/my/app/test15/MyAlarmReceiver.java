@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.my.app.test1;
+package com.my.app.test15;
 
-import com.my.app.test1.lib.MyIntent;
+import com.my.app.test15.lib.MyIntent;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

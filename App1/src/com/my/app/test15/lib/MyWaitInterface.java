@@ -1,4 +1,4 @@
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
 public interface MyWaitInterface {
 

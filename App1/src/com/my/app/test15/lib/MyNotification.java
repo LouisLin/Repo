@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
-import com.my.app.test1.R;
+import com.my.app.test15.R;
 
 import android.app.Notification;
 import android.app.NotificationManager;

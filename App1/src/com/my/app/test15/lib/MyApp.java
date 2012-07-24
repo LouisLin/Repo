@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +18,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.my.app.test1.MyApplication;
-import com.my.app.test1.R;
+import com.my.app.test15.R;
+import com.my.app.test15.MyApplication;
 
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;

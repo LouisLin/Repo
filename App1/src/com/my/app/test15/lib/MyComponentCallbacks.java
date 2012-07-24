@@ -1,4 +1,4 @@
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;

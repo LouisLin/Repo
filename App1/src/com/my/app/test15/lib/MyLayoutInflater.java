@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
 import android.view.LayoutInflater;
 import android.view.View;

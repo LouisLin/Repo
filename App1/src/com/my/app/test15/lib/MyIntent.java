@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
 import android.content.Intent;
 import android.os.Bundle;

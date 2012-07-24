@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.my.app.test1;
+package com.my.app.test15;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,15 +21,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.my.app.test1.lib.MyAlarm;
-import com.my.app.test1.lib.MyAlertDialog;
-import com.my.app.test1.lib.MyApp;
-import com.my.app.test1.lib.MyConvert;
-import com.my.app.test1.lib.MyIntent;
-import com.my.app.test1.lib.MyDate;
-import com.my.app.test1.lib.MyPendingIntent;
-import com.my.app.test1.lib.MyPreferences;
-import com.my.app.test1.lib.MyToast;
+import com.my.app.test15.R;
+import com.my.app.test15.lib.MyAlarm;
+import com.my.app.test15.lib.MyAlertDialog;
+import com.my.app.test15.lib.MyApp;
+import com.my.app.test15.lib.MyConvert;
+import com.my.app.test15.lib.MyDate;
+import com.my.app.test15.lib.MyIntent;
+import com.my.app.test15.lib.MyPendingIntent;
+import com.my.app.test15.lib.MyPreferences;
+import com.my.app.test15.lib.MyToast;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;

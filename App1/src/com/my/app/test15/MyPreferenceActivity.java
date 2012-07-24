@@ -1,9 +1,9 @@
 /**
  * 
  */
-package com.my.app.test1;
+package com.my.app.test15;
 
-import com.my.app.test1.lib.MyPreferences;
+import com.my.app.test15.lib.MyPreferences;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

@@ -1,7 +1,7 @@
-package com.my.app.test1.lib;
+package com.my.app.test15.lib;
 
-import com.my.app.test1.lib.MyWaitInterface.OnCompareListener;
-import com.my.app.test1.lib.MyWaitInterface.OnTimeoutListener;
+import com.my.app.test15.lib.MyWaitInterface.OnCompareListener;
+import com.my.app.test15.lib.MyWaitInterface.OnTimeoutListener;
 
 public class MyWait {
 

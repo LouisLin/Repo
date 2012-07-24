@@ -1,7 +1,8 @@
-package com.my.app.test1;
+package com.my.app.test15;
 
-import com.my.app.test1.lib.MyPreferences;
-import com.my.app.test1.lib.MyToast;
+import com.my.app.test15.R;
+import com.my.app.test15.lib.MyPreferences;
+import com.my.app.test15.lib.MyToast;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
