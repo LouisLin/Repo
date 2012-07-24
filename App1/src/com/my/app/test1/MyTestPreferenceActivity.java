@@ -92,7 +92,7 @@ public class MyTestPreferenceActivity extends PreferenceActivity implements OnSh
 
 		CheckBoxPreference queryTimeout = new CheckBoxPreference(this);
 		queryTimeout.setKey(MyApplication.TEST_PREF_QUERY_TIMEOUT);
-		queryTimeout.setTitle("Register Timeout");
+		queryTimeout.setTitle("Query Timeout");
 		root.addPreference(queryTimeout);
 
     	uri = MyPreferences.getString(
@@ -105,6 +105,11 @@ public class MyTestPreferenceActivity extends PreferenceActivity implements OnSh
 		queryUri.setText(uri);
 
         setPreferenceScreen(root);
+
+        localReg.setDisableDependentsState(false);
+        regTimeout.setDependency(MyApplication.TEST_PREF_LOCAL_REGISTER);
+        localQuery.setDisableDependentsState(false);
+		queryTimeout.setDependency(MyApplication.TEST_PREF_LOCAL_QUERY);
 	}
 
 	@Override

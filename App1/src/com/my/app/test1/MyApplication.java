@@ -51,34 +51,46 @@ import android.util.Log;
  *
  */
 public class MyApplication extends Application {
-	final public static long INTERVAL_DAY = AlarmManager.INTERVAL_DAY;
-	final public static long INTERVAL_HALF_DAY = AlarmManager.INTERVAL_HALF_DAY;
-	final public static long INTERVAL_HOUR = AlarmManager.INTERVAL_HOUR;
-	final public static long INTERVAL_HALF_HOUR = AlarmManager.INTERVAL_HALF_HOUR;
-	final public static long INTERVAL_FIFTEEN_MINUTES = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-	final public static long INTERVAL_TEN_MINUTES = 60000;//600000;
-	final public static long INTERVAL_FIVE_MINUTES = 30000;//300000;
-	final public static long INTERVAL_THREE_MINUTE = 18000;//180000;
-	final public static long INTERVAL_MINUTE = 6000;//60000;
-	final public static long INTERVAL_HALF_MINUTE = 3000;//30000;
+	public static final long INTERVAL_DAY = AlarmManager.INTERVAL_DAY;
+	public static final long INTERVAL_HALF_DAY = AlarmManager.INTERVAL_HALF_DAY;
+	public static final long INTERVAL_HOUR = AlarmManager.INTERVAL_HOUR;
+	public static final long INTERVAL_HALF_HOUR = AlarmManager.INTERVAL_HALF_HOUR;
+	public static final long INTERVAL_FIFTEEN_MINUTES = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+	public static final long INTERVAL_TEN_MINUTES = 60000;//600000;
+	public static final long INTERVAL_FIVE_MINUTES = 30000;//300000;
+	public static final long INTERVAL_THREE_MINUTE = 18000;//180000;
+	public static final long INTERVAL_MINUTE = 6000;//60000;
+	public static final long INTERVAL_HALF_MINUTE = 3000;//30000;
 
-	final public static long STARTUP_DELAY = 5;//INTERVAL_HALF_MINUTE;
-	final public static long DEF_ALARM_INTERVAL = 10000;//INTERVAL_HALF_DAY;
+	public static final long STARTUP_DELAY = 1000;//INTERVAL_HALF_MINUTE;
+	public static final long DEF_ALARM_INTERVAL = 10000;//INTERVAL_HALF_DAY;
 	
-	final public static String PREF_REGISTERED = "registered";
-	final public static String PREF_ISDN = "isdn";
+	public static final String PREF_REGISTERED = "registered";
+	public static final String PREF_ISDN = "isdn";
 	
+	public static final String PREF_SOUND_EFFECT = "sound";
+	public static final String PREF_VIBRATE_EFFECT = "vibrate";
+	public static final String PREF_DAY_NOTIFY = "day_notify";
+	public static final String PREF_DAY_PRECEDING_1 = "day_preceding_1";
+	public static final String PREF_DAY_PRECEDING_2 = "day_preceding_2";
+	public static final String PREF_NUM_NOTIFY = "num_notify";
+	public static final String PREF_NUM_SUCCEEDING = "succeeding";
+	public static final String PREF_NUM_MY_TURN = "my_turn";
+	public static final String PREF_NUM_PRECEDING_1 = "num_preceding_1";
+	public static final String PREF_NUM_PRECEDING_3 = "num_preceding_3";
+	public static final String PREF_NUM_PRECEDING_5 = "num_preceding_5";
+	public static final String PREF_NUM_PRECEDING_10 = "num_preceding_10";
+	public static final String PREF_NUM_PRECEDING_20 = "num_preceding_20";
 	
-	
-	final public static String TEST_PREF_SHOW_SDK_INFO = "show_info";
-	final public static String TEST_PREF_REGISTERED = "registered";
-	final public static String TEST_PREF_ALARM_ENABLE = "alarm_enable";
-	final public static String TEST_PREF_LOCAL_REGISTER = "local_register";
-	final public static String TEST_PREF_REGISTER_TIMEOUT = "register_timeout";
-	final public static String TEST_PREF_REGISTER_URI = "register_uri";
-	final public static String TEST_PREF_LOCAL_QUERY = "local_query";
-	final public static String TEST_PREF_QUERY_TIMEOUT = "query_timeout";
-	final public static String TEST_PREF_QUERY_URI = "query_uri";
+	public static final String TEST_PREF_SHOW_SDK_INFO = "show_info";
+	public static final String TEST_PREF_REGISTERED = "registered";
+	public static final String TEST_PREF_ALARM_ENABLE = "alarm_enable";
+	public static final String TEST_PREF_LOCAL_REGISTER = "local_register";
+	public static final String TEST_PREF_REGISTER_TIMEOUT = "register_timeout";
+	public static final String TEST_PREF_REGISTER_URI = "register_uri";
+	public static final String TEST_PREF_LOCAL_QUERY = "local_query";
+	public static final String TEST_PREF_QUERY_TIMEOUT = "query_timeout";
+	public static final String TEST_PREF_QUERY_URI = "query_uri";
 
 	private static enum RegisterTags {
 		ERROR
