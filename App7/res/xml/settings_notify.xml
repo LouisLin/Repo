@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="Notification Settings">
+    <CheckBoxPreference android:title="Sound effect" android:key="sound"/><CheckBoxPreference android:key="vibrate" android:title="Vibrate effect"/><PreferenceCategory android:title="Day Notification">
+        <SwitchPreference android:title="Notify me" android:key="day_notify"/>
+        <CheckBoxPreference android:title="Preceding days: 1" android:dependency="day_notify" android:key="day_preceding_1"/><CheckBoxPreference android:dependency="day_notify" android:key="day_preceding_2" android:title="Preceding days: 2"/>
+        
+    </PreferenceCategory><PreferenceCategory android:title="Number Notification">
+        <SwitchPreference android:title="Notify me" android:key="num_notify"/>
+        <CheckBoxPreference android:title="Succeed my number" android:key="succeeding" android:dependency="num_notify"/><CheckBoxPreference android:title="It's my turn" android:key="my_turn" android:dependency="num_notify"/><CheckBoxPreference android:title="Preceding numbers: 1" android:dependency="num_notify" android:key="num_preceding_1"/>
+        <CheckBoxPreference android:title="Preceding numbers: 3" android:dependency="num_notify" android:key="num_preceding_3"/>
+        <CheckBoxPreference android:title="Preceding numbers: 5" android:key="num_preceding_5" android:dependency="num_notify"/>
+        <CheckBoxPreference android:title="Preceding numbers: 10" android:key="num_preceding_10" android:dependency="num_notify"/>
+        <CheckBoxPreference android:title="Preceding numbers: 20" android:key="num_preceding_20" android:dependency="num_notify"/>
+        
+        
+        
+    </PreferenceCategory>
+    
+    
+    
+
+</PreferenceScreen>

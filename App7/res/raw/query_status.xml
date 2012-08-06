@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QueryStatus>
+	<Error>0</Error>
+	<RecNum>1</RecNum>
+	<RegRec index="0">
+		<Hospital>雙和醫院</Hospital>
+		<Department>內科一診</Department>
+		<RegDate>2012/07/30</RegDate>
+		<DiagDate>2012/07/31</DiagDate>
+		<RegNo>45</RegNo>
+		<DiagNo>24</DiagNo>
+		<EstTime>76</EstTime>
+	</RegRec>
+</QueryStatus>

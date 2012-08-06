@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Test Settings" >
+
+    <CheckBoxPreference
+        android:key="show_info"
+        android:title="Show SDK Info at starup" />
+
+    <SwitchPreference
+        android:key="alarm_enable"
+        android:title="Alarm Enable" />
+
+    <CheckBoxPreference
+        android:key="registered"
+        android:title="Registered" />
+
+    <SwitchPreference
+        android:key="local_register"
+        android:title="Local Register" />
+
+    <CheckBoxPreference
+        android:dependency="local_register"
+        android:key="register_timeout"
+        android:title="Register Timeout" />
+
+    <EditTextPreference
+        android:defaultValue="@string/register_uri"
+        android:key="register_uri"
+        android:title="Register URI" />
+
+    <SwitchPreference
+        android:key="local_query"
+        android:title="Local Query" />
+
+    <CheckBoxPreference
+        android:dependency="local_query"
+        android:key="query_timeout"
+        android:title="Query Timeout" />
+
+    <EditTextPreference
+        android:key="query_uri"
+        android:title="Query URI" />
+
+</PreferenceScreen>
